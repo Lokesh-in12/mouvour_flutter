@@ -13,14 +13,22 @@ class ExplorePage extends StatelessWidget {
       appBar: AppBar(
         title: Text("Explore Movies"),
       ),
-      body: SafeArea(
-        child: Container(
-          width: double.infinity,
-          height: double.infinity,
-          color: Colors.lime,
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        // color: Colors.lime,
+        child: SingleChildScrollView(
+          padding: EdgeInsets.only(top: 20),
           child: Wrap(
             alignment: WrapAlignment.spaceAround,
             children: <Widget>[
+              movie_card_now(),
+              movie_card_now(),
+              movie_card_now(),
+              movie_card_now(),
+              movie_card_now(),
+              movie_card_now(),
+              movie_card_now(),
               movie_card_now(),
               movie_card_now(),
               movie_card_now(),

@@ -33,9 +33,12 @@ class HomePage extends StatelessWidget {
                   height: 20,
                 ),
                 Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                     // width: double.infinity,
                     // height: 190,
-                    color: Colors.lightBlue,
+                    // color: Colors.lightBlue,
                     child: CarouselSlider(
                       items: [1, 2, 3, 4].map((e) {
                         return Container(
@@ -52,7 +55,7 @@ class HomePage extends StatelessWidget {
                         );
                       }).toList(),
                       options: CarouselOptions(
-                          // autoPlay: true,
+                          autoPlay: true,
                           enableInfiniteScroll: false,
                           enlargeStrategy: CenterPageEnlargeStrategy.scale,
                           autoPlayInterval: Duration(seconds: 5)),
@@ -258,9 +261,13 @@ class HomePage extends StatelessWidget {
                 ),
                 onPressed: () => Navigator.pushNamed(context, Routes.likedPage),
               ),
-
-              CupertinoButton(child: Icon(Icons.explore_outlined,color: Colors.black,size: 27,), onPressed: ()=>Navigator.pushNamed(context, Routes.explore)) 
-             
+              CupertinoButton(
+                  child: Icon(
+                    Icons.explore_outlined,
+                    color: Colors.black,
+                    size: 27,
+                  ),
+                  onPressed: () => Navigator.pushNamed(context, Routes.explore))
             ],
           ),
         ),
