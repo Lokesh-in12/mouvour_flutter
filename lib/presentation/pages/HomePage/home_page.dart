@@ -1,7 +1,10 @@
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:mouvour_flutter/routes/app_routes.dart';
 
 class HomePage extends StatelessWidget {
   @override
@@ -153,7 +156,7 @@ class HomePage extends StatelessWidget {
                   ),
                 )),
 
-                //trending title for top-rated
+                // title for top-rated
                 SizedBox(
                   height: 25,
                 ),
@@ -195,6 +198,42 @@ class HomePage extends StatelessWidget {
                         ),
                       ],
                     )),
+
+                //trending now
+                // title for top-rated
+                SizedBox(
+                  height: 25,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text(
+                      "Trending Now",
+                      style: TextStyle(fontSize: 20),
+                    ),
+                    Text("See more")
+                  ],
+                ),
+                SizedBox(
+                  height: 5,
+                ),
+
+                Container(
+                  child: CarouselSlider(
+                      carouselController: CarouselController(),
+                      items: [1, 2, 3, 4, 5, 6].map((e) {
+                        return Container(
+                          child: Image.network(
+                            "https://marketplace.canva.com/EAE_E8rjFrI/1/0/1131w/canva-minimal-mystery-of-forest-movie-poster-ggHwd_WiPcI.jpg",
+                            height: 120,
+                          ),
+                        );
+                      }).toList(),
+                      options: CarouselOptions(
+                          autoPlay: true,
+                          enlargeCenterPage: true,
+                          aspectRatio: sqrt1_2)),
+                )
               ],
             ),
           ),
@@ -204,21 +243,24 @@ class HomePage extends StatelessWidget {
 
       //bottom app bar start
       bottomNavigationBar: BottomAppBar(
-        height: 50,
+        height: 55,
         child: Padding(
           padding: const EdgeInsets.fromLTRB(30, 0, 30, 0),
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              Icon(
-                Icons.favorite,
-                color: Colors.red,
-                size: 25,
+              CupertinoButton(
+                child: Icon(
+                  CupertinoIcons.heart_fill,
+                  color: Colors.red,
+                  size: 25,
+                ),
+                onPressed: () => Navigator.pushNamed(context, Routes.likedPage),
               ),
-              Icon(
-                Icons.explore,
-                size: 27,
-              )
+
+              CupertinoButton(child: Icon(Icons.explore_outlined,color: Colors.black,size: 27,), onPressed: ()=>Navigator.pushNamed(context, Routes.explore)) 
+             
             ],
           ),
         ),
