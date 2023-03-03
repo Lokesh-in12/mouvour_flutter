@@ -33,23 +33,25 @@ class HomePage extends StatelessWidget {
                   height: 20,
                 ),
                 Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
+                    // decoration: BoxDecoration(
+                    //   borderRadius: BorderRadius.circular(10),
+                    // ),
                     // width: double.infinity,
                     // height: 190,
                     // color: Colors.lightBlue,
                     child: CarouselSlider(
                       items: [1, 2, 3, 4].map((e) {
                         return Container(
-                          color: Color.fromARGB(255, 2, 138, 21),
                           width: 250,
                           height: 150,
+                          
                           child: FittedBox(
                             fit: BoxFit.cover,
-                            child: Image.network(
-                              "https://wallpapercave.com/wp/wp10388105.jpg",
-                              fit: BoxFit.cover,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: Image(
+                                image: NetworkImage("https://wallpapercave.com/wp/wp10388105.jpg"),
+                              ),
                             ),
                           ),
                         );
