@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mouvour_flutter/data/consts/const.dart';
 import 'package:mouvour_flutter/data/models/movies_model.dart';
 import 'package:mouvour_flutter/logic/cubits/movie_cubit.dart';
@@ -48,24 +49,24 @@ class HomePage extends StatelessWidget {
                         height: 20,
                       ),
                       Container(
-                          // decoration: BoxDecoration(
-                          //   borderRadius: BorderRadius.circular(10),
-                          // ),
-                          // width: double.infinity,
-                          // height: 190,
-                          // color: Colors.lightBlue,
                           child: CarouselSlider(
                         items: [1, 2, 3, 4].map((e) {
-                          return Container(
-                            width: 250,
-                            height: 150,
-                            child: FittedBox(
-                              fit: BoxFit.cover,
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(10),
-                                child: Image(
-                                  image: NetworkImage(
-                                      "https://wallpapercave.com/wp/wp10388105.jpg"),
+                          return InkWell(
+                            onTap: ()=> GoRouter.of(context).pushNamed('details',params: {
+                              'id': '2'
+                            }),
+                            child: Container(
+                              
+                              width: 250,
+                              height: 150,
+                              child: FittedBox(
+                                fit: BoxFit.cover,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(10),
+                                  child: Image(
+                                    image: NetworkImage(
+                                        "https://wallpapercave.com/wp/wp10388105.jpg"),
+                                  ),
                                 ),
                               ),
                             ),
@@ -103,7 +104,11 @@ class HomePage extends StatelessWidget {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: state.now_playing_movies?.map((e) {
-                                  return movie_card_now(e);
+                                  return InkWell(
+                                    onTap: ()=> GoRouter.of(context).pushNamed('details',params: {
+                                      'id': "${e.id}"
+                                    }),
+                                    child: movie_card_now(e));
                                 }).toList() ??
                                 <Widget>[Text("no data")],
                           ),
@@ -246,7 +251,7 @@ class HomePage extends StatelessWidget {
                   color: Colors.red,
                   size: 25,
                 ),
-                onPressed: () => Navigator.pushNamed(context, Routes.likedPage),
+                onPressed: () => GoRouter.of(context).pushNamed('likedMovies'),
               ),
               CupertinoButton(
                   child: Icon(
@@ -254,13 +259,13 @@ class HomePage extends StatelessWidget {
                     color: Colors.black,
                     size: 27,
                   ),
-                  onPressed: () => Navigator.pushNamed(context, Routes.explore))
+                  onPressed: () => GoRouter.of(context).pushNamed('explore'))
             ],
           ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => Navigator.pushNamed(context, Routes.discover),
+        onPressed: () => GoRouter.of(context).pushNamed('discover'),
         child: Icon(CupertinoIcons.lightbulb_fill),
         backgroundColor: Color.fromARGB(255, 59, 59, 59),
       ),
