@@ -66,7 +66,7 @@ Container movie_card_now() {
             )
           ],
         ),
-        
+
         SizedBox(
           height: 10,
         ),

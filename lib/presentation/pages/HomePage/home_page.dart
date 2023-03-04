@@ -4,6 +4,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mouvour_flutter/data/consts/const.dart';
+import 'package:mouvour_flutter/data/models/movies_model.dart';
+import 'package:mouvour_flutter/logic/cubits/movie_cubit.dart';
+import 'package:mouvour_flutter/logic/cubits/movie_state.dart';
 import 'package:mouvour_flutter/routes/app_routes.dart';
 
 class HomePage extends StatelessWidget {
@@ -20,229 +25,209 @@ class HomePage extends StatelessWidget {
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.fromLTRB(10, 0, 20, 0),
-        child: Container(
-          width: double.infinity,
-          // color: Colors.grey[400],
-          child: SingleChildScrollView(
-            child: Column(
-              children: <Widget>[
-                //now showing
-                const SizedBox(
-                  height: 20,
-                ),
-                Container(
-                    // decoration: BoxDecoration(
-                    //   borderRadius: BorderRadius.circular(10),
-                    // ),
-                    // width: double.infinity,
-                    // height: 190,
-                    // color: Colors.lightBlue,
-                    child: CarouselSlider(
-                      items: [1, 2, 3, 4].map((e) {
-                        return Container(
-                          width: 250,
-                          height: 150,
-                          
-                          child: FittedBox(
-                            fit: BoxFit.cover,
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(10),
-                              child: Image(
-                                image: NetworkImage("https://wallpapercave.com/wp/wp10388105.jpg"),
+      body: BlocConsumer<MovieCubit, MovieState>(
+        listener: (context, state) {},
+        builder: (context, state) {
+          if (state is MovieLoadingState) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+
+          if (state is MovieLoadedState) {
+            return Padding(
+              padding: const EdgeInsets.fromLTRB(10, 0, 20, 0),
+              child: Container(
+                width: double.infinity,
+                // color: Colors.grey[400],
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: <Widget>[
+                      //now showing
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      Container(
+                          // decoration: BoxDecoration(
+                          //   borderRadius: BorderRadius.circular(10),
+                          // ),
+                          // width: double.infinity,
+                          // height: 190,
+                          // color: Colors.lightBlue,
+                          child: CarouselSlider(
+                        items: [1, 2, 3, 4].map((e) {
+                          return Container(
+                            width: 250,
+                            height: 150,
+                            child: FittedBox(
+                              fit: BoxFit.cover,
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(10),
+                                child: Image(
+                                  image: NetworkImage(
+                                      "https://wallpapercave.com/wp/wp10388105.jpg"),
+                                ),
                               ),
                             ),
+                          );
+                        }).toList(),
+                        options: CarouselOptions(
+                            autoPlay: true,
+                            enableInfiniteScroll: false,
+                            enlargeStrategy: CenterPageEnlargeStrategy.scale,
+                            autoPlayInterval: Duration(seconds: 5)),
+                      )),
+
+                      SizedBox(
+                        height: 20,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Text(
+                            "Now showing",
+                            style: TextStyle(fontSize: 20),
                           ),
-                        );
-                      }).toList(),
-                      options: CarouselOptions(
-                          autoPlay: true,
-                          enableInfiniteScroll: false,
-                          enlargeStrategy: CenterPageEnlargeStrategy.scale,
-                          autoPlayInterval: Duration(seconds: 5)),
-                    )),
+                          Text("See more")
+                        ],
+                      ),
 
-                SizedBox(
-                  height: 20,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Text(
-                      "Now showing",
-                      style: TextStyle(fontSize: 20),
-                    ),
-                    Text("See more")
-                  ],
-                ),
+                      //movie_cards
+                      SizedBox(
+                        height: 15,
+                      ),
+                      Container(
+                        // color: Colors.red,
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: state.now_playing_movies?.map((e) {
+                                  return movie_card_now(e);
+                                }).toList() ??
+                                <Widget>[Text("no data")],
+                          ),
+                        ),
+                      ),
+                      //now showing movie cards ends here
 
-                //movie_cards
-                SizedBox(
-                  height: 15,
-                ),
-                Container(
-                  // color: Colors.red,
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: <Widget>[
-                        movie_card_now(),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        movie_card_now(),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        movie_card_now(),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        movie_card_now(),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        movie_card_now(),
-                        SizedBox(
-                          width: 10,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                //now showing movie cards ends here
-
-                SizedBox(
-                  height: 18,
-                ),
-
-                //popular title
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Text(
-                      "Popular",
-                      style: TextStyle(fontSize: 20),
-                    ),
-                    Text("See more")
-                  ],
-                ),
-
-                //side-by-side cards with info movie cards ==> popular
-                const SizedBox(
-                  height: 20,
-                ),
-                Container(
-                    // color: Colors.orange,
-                    child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  physics: PageScrollPhysics(),
-                  child: Row(
-                    children: <Widget>[
-                      Side_by_side_movie_card(),
                       SizedBox(
                         height: 20,
                       ),
-                      Side_by_side_movie_card(),
-                      SizedBox(
-                        height: 20,
+
+                      //popular title
+                      //scroll_perfect_layout
+                      Container(
+                        child: Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                Text(
+                                  "Popular",
+                                  style: TextStyle(fontSize: 20),
+                                ),
+                                Text("See more")
+                              ],
+                            ),
+                            SizedBox(
+                              height: 20,
+                            ),
+                            SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              physics: PageScrollPhysics(),
+                              child: Row(
+                                children: state.popular_movies?.map((e) {
+                                      return Side_by_side_movie_card(e);
+                                    }).toList() ??
+                                    <Widget>[Text("no data")],
+                              ),
+                            )
+                          ],
+                        ),
                       ),
-                      Side_by_side_movie_card(),
+
+                      // title for top-rated
                       SizedBox(
-                        height: 20,
+                        height: 25,
                       ),
-                      Side_by_side_movie_card(),
+                      Container(
+                        child: Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                Text(
+                                  "Top Rated",
+                                  style: TextStyle(fontSize: 20),
+                                ),
+                                Text("See more")
+                              ],
+                            ),
+                            SizedBox(
+                              height: 20,
+                            ),
+                            SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              physics: PageScrollPhysics(),
+                              child: Row(
+                                children: state.top_rated_movies?.map((e) {
+                                      return Side_by_side_movie_card(e);
+                                    }).toList() ??
+                                    <Widget>[Text("no data")],
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                      //trending now
+                      // title for top-rated
                       SizedBox(
-                        height: 20,
+                        height: 25,
                       ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Text(
+                            "Trending Now",
+                            style: TextStyle(fontSize: 20),
+                          ),
+                          Text("See more")
+                        ],
+                      ),
+                      SizedBox(
+                        height: 5,
+                      ),
+
+                      Container(
+                        child: CarouselSlider(
+                            carouselController: CarouselController(),
+                            items: state.trending_movies?.map((e) {
+                                  return Container(
+                                    child: Image(
+                                      image: NetworkImage(
+                                          Const.IMG + "${e.posterPath}"),
+                                      height: 180,
+                                    ),
+                                  );
+                                }).toList() ??
+                                <Widget>[Text("no data")],
+                            options: CarouselOptions(
+                                autoPlay: true,
+                                enlargeCenterPage: true,
+                                aspectRatio: sqrt1_2)),
+                      )
                     ],
                   ),
-                )),
+                ),
+              ),
+            );
+          }
 
-                // title for top-rated
-                SizedBox(
-                  height: 25,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Text(
-                      "Top Rated",
-                      style: TextStyle(fontSize: 20),
-                    ),
-                    Text("See more")
-                  ],
-                ),
-                SizedBox(
-                  height: 30,
-                ),
-
-                //add here top rated
-                Container(
-                    width: double.infinity,
-                    // color: Colors.orange,
-                    child: Column(
-                      children: <Widget>[
-                        Side_by_side_movie_card(),
-                        SizedBox(
-                          height: 20,
-                        ),
-                        Side_by_side_movie_card(),
-                        SizedBox(
-                          height: 20,
-                        ),
-                        Side_by_side_movie_card(),
-                        SizedBox(
-                          height: 20,
-                        ),
-                        Side_by_side_movie_card(),
-                        SizedBox(
-                          height: 20,
-                        ),
-                      ],
-                    )),
-
-                //trending now
-                // title for top-rated
-                SizedBox(
-                  height: 25,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Text(
-                      "Trending Now",
-                      style: TextStyle(fontSize: 20),
-                    ),
-                    Text("See more")
-                  ],
-                ),
-                SizedBox(
-                  height: 5,
-                ),
-
-                Container(
-                  child: CarouselSlider(
-                      carouselController: CarouselController(),
-                      items: [1, 2, 3, 4, 5, 6].map((e) {
-                        return Container(
-                          child: Image.network(
-                            "https://marketplace.canva.com/EAE_E8rjFrI/1/0/1131w/canva-minimal-mystery-of-forest-movie-poster-ggHwd_WiPcI.jpg",
-                            height: 120,
-                          ),
-                        );
-                      }).toList(),
-                      options: CarouselOptions(
-                          autoPlay: true,
-                          enlargeCenterPage: true,
-                          aspectRatio: sqrt1_2)),
-                )
-              ],
-            ),
-          ),
-        ),
+          return Center(
+            child: Text("some eror"),
+          );
+        },
       ),
       //body ends here
 
@@ -275,7 +260,7 @@ class HomePage extends StatelessWidget {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () => Navigator.pushNamed(context, Routes.discover),
         child: Icon(CupertinoIcons.lightbulb_fill),
         backgroundColor: Color.fromARGB(255, 59, 59, 59),
       ),
@@ -283,7 +268,8 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Container movie_card_now() {
+  Container movie_card_now(e) {
+    print(Const.IMG);
     return Container(
       width: 140,
       height: 280,
@@ -293,8 +279,7 @@ class HomePage extends StatelessWidget {
           ClipRRect(
               borderRadius: BorderRadius.circular(6),
               child: Image(
-                image: NetworkImage(
-                    "https://images.unsplash.com/photo-1677733866272-96cb6c2204ae?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1374&q=80"),
+                image: NetworkImage(Const.IMG + "${e.posterPath}"),
               )),
           SizedBox(
             height: 10,
@@ -314,15 +299,14 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Row Side_by_side_movie_card() {
+  Row Side_by_side_movie_card(e) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         ClipRRect(
           borderRadius: BorderRadius.circular(6),
           child: Image(
-            image: NetworkImage(
-                "https://www.sonypictures.com/sites/default/files/styles/max_560x840/public/title-key-art/venomltbc_onesheet_1400x2100_est_0.jpg?itok=niH5C8AR"),
+            image: NetworkImage(Const.IMG + "${e.posterPath}"),
             height: 180,
           ),
         ),
