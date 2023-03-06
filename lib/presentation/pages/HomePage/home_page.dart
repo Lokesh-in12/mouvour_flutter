@@ -10,6 +10,8 @@ import 'package:mouvour_flutter/data/consts/const.dart';
 import 'package:mouvour_flutter/data/models/movies_model.dart';
 import 'package:mouvour_flutter/logic/cubits/movie_cubit.dart';
 import 'package:mouvour_flutter/logic/cubits/movie_state.dart';
+import 'package:mouvour_flutter/logic/cubits/singleMovieCubit/single_movie_cubit.dart';
+import 'package:mouvour_flutter/logic/cubits/singleMovieCubit/single_movie_state.dart';
 import 'package:mouvour_flutter/routes/app_routes.dart';
 
 class HomePage extends StatelessWidget {
@@ -27,7 +29,11 @@ class HomePage extends StatelessWidget {
         ],
       ),
       body: BlocConsumer<MovieCubit, MovieState>(
-        listener: (context, state) {},
+        listener: (context, state) {
+          if (state is MovieLoadingState) {
+            BlocProvider.of<MovieCubit>(context).fetchNowPlaying();
+          }
+        },
         builder: (context, state) {
           if (state is MovieLoadingState) {
             return Center(
@@ -44,7 +50,6 @@ class HomePage extends StatelessWidget {
                 child: SingleChildScrollView(
                   child: Column(
                     children: <Widget>[
-                      //now showing
                       const SizedBox(
                         height: 20,
                       ),
@@ -52,11 +57,9 @@ class HomePage extends StatelessWidget {
                           child: CarouselSlider(
                         items: [1, 2, 3, 4].map((e) {
                           return InkWell(
-                            onTap: ()=> GoRouter.of(context).pushNamed('details',params: {
-                              'id': '2'
-                            }),
+                            onTap: () => GoRouter.of(context)
+                                .pushNamed('details', params: {'id': '2'}),
                             child: Container(
-                              
                               width: 250,
                               height: 150,
                               child: FittedBox(
@@ -82,6 +85,7 @@ class HomePage extends StatelessWidget {
                       SizedBox(
                         height: 20,
                       ),
+                      //now showing
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
@@ -103,13 +107,32 @@ class HomePage extends StatelessWidget {
                           scrollDirection: Axis.horizontal,
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: state.now_playing_movies?.map((e) {
-                                  return InkWell(
-                                    onTap: ()=> GoRouter.of(context).pushNamed('details',params: {
-                                      'id': "${e.id}"
-                                    }),
-                                    child: movie_card_now(e));
-                                }).toList() ??
+                            children: state.now_playing_movies
+                                    ?.map((e) {
+                                      return InkWell(
+                                          onTap: () async {
+                                            // BlocProvider.of<SingleMovieCubit>(context)
+                                            //     .emit(SingleMovieLoadingState("${e.id}"));
+                                            // BlocProvider.of<SingleMovieCubit>(
+                                            //         context)
+                                            //     .SingleMovieData("${e.id}");
+
+                                            context.pushNamed(
+                                                'details',
+                                                params: {'id': "${e.id}"});
+                                          },
+                                          child: Container(
+                                              child: Row(
+                                            children: <Widget>[
+                                              movie_card_now(e),
+                                              SizedBox(
+                                                width: 10,
+                                              ),
+                                            ],
+                                          )));
+                                    })
+                                    .toList()
+                                    .sublist(0, 5) ??
                                 <Widget>[Text("no data")],
                           ),
                         ),
@@ -142,9 +165,12 @@ class HomePage extends StatelessWidget {
                               scrollDirection: Axis.horizontal,
                               physics: PageScrollPhysics(),
                               child: Row(
-                                children: state.popular_movies?.map((e) {
-                                      return Side_by_side_movie_card(e);
-                                    }).toList() ??
+                                children: state.popular_movies
+                                        ?.map((e) {
+                                          return Side_by_side_movie_card(e);
+                                        })
+                                        .toList()
+                                        .sublist(0, 5) ??
                                     <Widget>[Text("no data")],
                               ),
                             )
@@ -176,9 +202,12 @@ class HomePage extends StatelessWidget {
                               scrollDirection: Axis.horizontal,
                               physics: PageScrollPhysics(),
                               child: Row(
-                                children: state.top_rated_movies?.map((e) {
-                                      return Side_by_side_movie_card(e);
-                                    }).toList() ??
+                                children: state.top_rated_movies
+                                        ?.map((e) {
+                                          return Side_by_side_movie_card(e);
+                                        })
+                                        .toList()
+                                        .sublist(0, 5) ??
                                     <Widget>[Text("no data")],
                               ),
                             )
@@ -207,15 +236,18 @@ class HomePage extends StatelessWidget {
                       Container(
                         child: CarouselSlider(
                             carouselController: CarouselController(),
-                            items: state.trending_movies?.map((e) {
-                                  return Container(
-                                    child: Image(
-                                      image: NetworkImage(
-                                          Const.IMG + "${e.posterPath}"),
-                                      height: 180,
-                                    ),
-                                  );
-                                }).toList() ??
+                            items: state.trending_movies
+                                    ?.map((e) {
+                                      return Container(
+                                        child: Image(
+                                          image: NetworkImage(
+                                              Const.IMG + "${e.posterPath}"),
+                                          height: 180,
+                                        ),
+                                      );
+                                    })
+                                    .toList()
+                                    .sublist(0, 5) ??
                                 <Widget>[Text("no data")],
                             options: CarouselOptions(
                                 autoPlay: true,
@@ -290,7 +322,7 @@ class HomePage extends StatelessWidget {
             height: 10,
           ),
           Text(
-            "Spiderman: No Way Home",
+            e.title.toString(),
             style: TextStyle(
               fontSize: 15,
             ),
@@ -298,7 +330,7 @@ class HomePage extends StatelessWidget {
           SizedBox(
             height: 8,
           ),
-          Text("⭐ 9.1/10 IMDb")
+          Text("⭐ ${e.voteAverage.toString()}/10 IMDb")
         ],
       ),
     );
@@ -328,10 +360,10 @@ class HomePage extends StatelessWidget {
               const SizedBox(
                 height: 5,
               ),
-              const LimitedBox(
+              LimitedBox(
                 maxWidth: 150,
                 child: Text(
-                  "Venom Let There Be \n Carnage",
+                  e.title.toString(),
                   style: TextStyle(
                     fontSize: 19,
                   ),
@@ -340,8 +372,8 @@ class HomePage extends StatelessWidget {
               const SizedBox(
                 height: 15,
               ),
-              const Text(
-                "⭐ 9.1/10 IMDb",
+              Text(
+                "⭐ ${e.voteAverage.toString()}/10 IMDb",
                 style: TextStyle(fontSize: 16),
               ),
               //genres - of side movie cards

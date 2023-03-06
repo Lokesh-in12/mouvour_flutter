@@ -1,5 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mouvour_flutter/data/models/cast_model.dart';
 import 'package:mouvour_flutter/data/models/movies_model.dart';
+import 'package:mouvour_flutter/data/models/sing/single_movie.dart';
 import 'package:mouvour_flutter/data/repositories/movie_repository.dart';
 import 'package:mouvour_flutter/logic/cubits/movie_state.dart';
 
@@ -24,29 +26,16 @@ class MovieCubit extends Cubit<MovieState> {
       List<MovieModel> trending_movies = await movieRepository.fetchTrending();
 
       emit(MovieLoadedState(
-          now_playing_movies: nowMovies,
-          popular_movies: popular_movies,
-          top_rated_movies: top_rated,
-          trending_movies: trending_movies));
+        now_playing_movies: nowMovies,
+        popular_movies: popular_movies,
+        top_rated_movies: top_rated,
+        trending_movies: trending_movies,
+      ));
     } catch (e) {
       print("error is $e");
       emit(MovieErrorState(e.toString()));
     }
   }
-
-  // //popular
-  // void fetchPopular() async {
-  //   try {
-  //     print("in fetchPopular()");
-  //     List<MovieModel> popular_movies = await movieRepository.fetchPopular();
-  //     print("after getting data and bfore emiiting $popular_movies");
-  //     emit(MovieLoadedState(popular_movies: popular_movies));
-  //     print("=====>>>>> $popular_movies");
-  //   } catch (e) {
-  //     print("error is $e");
-  //     emit(MovieErrorState(e.toString()));
-  //   }
-  // }
 
   // //toprated
   // void fetchTopRated() async {

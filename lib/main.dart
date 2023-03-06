@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:mouvour_flutter/data/models/movies_model.dart';
 import 'package:mouvour_flutter/data/repositories/movie_repository.dart';
 import 'package:mouvour_flutter/logic/cubits/movie_cubit.dart';
+import 'package:mouvour_flutter/logic/cubits/singleMovieCubit/single_movie_cubit.dart';
 import 'package:mouvour_flutter/presentation/pages/Details/details_page.dart';
 import 'package:mouvour_flutter/presentation/pages/Discover/discover_page.dart';
 import 'package:mouvour_flutter/presentation/pages/Explore/explore_page.dart';
@@ -22,7 +23,15 @@ final GoRouter _router = GoRouter(
     GoRoute(
       path: '/',
       builder: (BuildContext context, GoRouterState state) =>
-          BlocProvider(create: (context) => MovieCubit(), child: HomePage()),
+          // BlocProvider(create: (context) => MovieCubit(), child: HomePage()),
+          MultiBlocProvider(providers: [
+        BlocProvider(
+          create: (context) => MovieCubit(),
+        ),
+        BlocProvider(
+          create: (context) => SingleMovieCubit(),
+        )
+      ], child: HomePage()),
       routes: <RouteBase>[
         GoRoute(
           path: 'likedMovies',
@@ -44,8 +53,9 @@ final GoRouter _router = GoRouter(
         GoRoute(
           path: 'details/:id',
           name: 'details',
-          builder: (BuildContext context, GoRouterState state) =>
-              DetailsPage(id: state.params['id']!),
+          builder: (BuildContext context, GoRouterState state) => BlocProvider(
+              create: (context) => MovieCubit(),
+              child: DetailsPage(id: state.params['id'])),
         ),
       ],
     ),

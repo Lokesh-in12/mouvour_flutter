@@ -1,7 +1,9 @@
 import 'dart:math';
 
 import 'package:dio/dio.dart';
+import 'package:mouvour_flutter/data/models/cast_model.dart';
 import 'package:mouvour_flutter/data/models/movies_model.dart';
+import 'package:mouvour_flutter/data/models/sing/single_movie.dart';
 import 'package:mouvour_flutter/data/repositories/api/api.dart';
 
 class MovieRepository {
@@ -61,8 +63,8 @@ class MovieRepository {
   Future<List<MovieModel>> fetchTrending() async {
     try {
       print("in repo fetchTrending");
-      Response response = await api.sendRequest
-          .get("/trending/all/day?api_key=${API.API_KEY}");
+      Response response =
+          await api.sendRequest.get("/trending/all/day?api_key=${API.API_KEY}");
       List<dynamic> movieMaps = response.data['results'];
       print("movieMaps 78857==>>>>> $movieMaps");
 
@@ -74,4 +76,38 @@ class MovieRepository {
     }
   }
 
+  //get casta api
+  Future<List<CastModel>> fetchCasts(String id) async {
+    try {
+      print("in repo fetchCasts");
+      Response response = await api.sendRequest.get(
+          "https://api.themoviedb.org/3/movie/$id/credits?api_key=${API.API_KEY}&language=en-US");
+      List<dynamic> castMaps = response.data['cast'];
+      print("castMaps 78857==>>>>> $castMaps");
+
+      return castMaps.map((movieMap) => CastModel.fromJson(movieMap)).toList();
+    } catch (e) {
+      throw (e);
+    }
+  }
+
+  //fetchSingleMovieData
+  //get casta api
+  Future<List<SingleMovieModel>> fetchSingleMovieData(String id) async {
+    try {
+      print("in repo FetchSingleMovieData and id => $id");
+      Response response = await api.sendRequest
+          .get("https://api.themoviedb.org/3/movie/$id?api_key=${API.API_KEY}");
+      print("response of singleM => ${response.data}");
+      List<dynamic> singleMovieData = [response.data];
+      print("singleMRes $singleMovieData ");
+      print("singleMovieData ==>>>>> $singleMovieData");
+
+      return singleMovieData
+          .map((movieMap) => SingleMovieModel.fromJson(movieMap))
+          .toList();
+    } catch (e) {
+      throw (e);
+    }
+  }
 }

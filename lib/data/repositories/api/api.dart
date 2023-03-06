@@ -9,7 +9,7 @@ class API {
 
   API() {
     _dio.options.baseUrl = "https://api.themoviedb.org/3";
-    _dio.interceptors.add(PrettyDioLogger());
+    // _dio.interceptors.add(PrettyDioLogger());
   }
 
   Dio get sendRequest => _dio;
