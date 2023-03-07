@@ -59,8 +59,10 @@ class _DetailsPageState extends State<DetailsPage> {
   }
 
   void getRecommendations(String id) async {
+    print("get Recommanded");
     List<MovieModel> data =
         await movieRepository.fetchRecommendedMovies(widget.id ?? "1077280");
+    print("recommended data => $data");
     setState(() {
       recommended = data;
     });
@@ -107,10 +109,10 @@ class _DetailsPageState extends State<DetailsPage> {
                               width: double.infinity,
                               height: 210,
                               child: Image.network(
-                                  "${Const.IMG}${movie.backdropPath ?? "nodata"}"),
+                                  "${Const.IMG}${movie?.backdropPath ?? "/rqbCbjB19amtOtFQbb3K2lgm2zv.jpg"}"),
                             ),
                             InkWell(
-                              onTap: ()=> context.pop(),
+                              onTap: () => context.pop(),
                               child: Container(
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(20),
@@ -130,7 +132,7 @@ class _DetailsPageState extends State<DetailsPage> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
                             Text(
-                              "${movie.title ?? "no data title"}",
+                              "${movie?.title ?? "no data title"}",
                               style: TextStyle(fontSize: 20),
                             ),
                             Text(
@@ -251,7 +253,7 @@ class _DetailsPageState extends State<DetailsPage> {
                         SingleChildScrollView(
                           scrollDirection: Axis.horizontal,
                           child: Row(
-                              children: casts!.map((e) {
+                              children: casts?.map((e) {
                                     return Container(
                                       child: Row(
                                         children: <Widget>[

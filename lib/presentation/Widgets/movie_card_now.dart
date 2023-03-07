@@ -16,15 +16,19 @@ class Movie_card_now extends StatelessWidget {
           ClipRRect(
               borderRadius: BorderRadius.circular(6),
               child: Image(
-                image: NetworkImage(Const.IMG + "${e.posterPath}"),
+                image: NetworkImage(Const.IMG + "${e.posterPath}" ??
+                    "/rqbCbjB19amtOtFQbb3K2lgm2zv.jpg"),
               )),
           SizedBox(
             height: 10,
           ),
-          Text(
-            e.title.toString(),
-            style: TextStyle(
-              fontSize: 15,
+          LimitedBox(
+            maxHeight: 50,
+            child: Text(
+              e.title.toString(),
+              style: TextStyle(
+                fontSize: 15,
+              ),
             ),
           ),
           SizedBox(
