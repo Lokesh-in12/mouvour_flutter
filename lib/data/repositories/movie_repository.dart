@@ -97,9 +97,7 @@ class MovieRepository {
       print("in repo FetchSingleMovieData and id => $id");
       Response response = await api.sendRequest
           .get("https://api.themoviedb.org/3/movie/$id?api_key=${API.API_KEY}");
-      print("response of singleM => ${response.data}");
       List<dynamic> singleMovieData = [response.data];
-      print("singleMRes $singleMovieData ");
       print("singleMovieData ==>>>>> $singleMovieData");
 
       return singleMovieData

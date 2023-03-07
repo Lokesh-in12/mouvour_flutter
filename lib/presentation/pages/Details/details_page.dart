@@ -27,56 +27,52 @@ class DetailsPage extends StatefulWidget {
 class _DetailsPageState extends State<DetailsPage> {
   List<dynamic>? casts;
   List<dynamic>? recommended;
-  List<dynamic>? fetched;
+  // List<dynamic>? fetched;
 
   MovieRepository movieRepository = MovieRepository();
 
   @override
   void initState() {
+    print(widget.id);
     super.initState();
-    fetchThisMovieFromApi(widget.id ?? "78857");
-    getCasts(widget.id ?? "78857");
-    getRecommendations(widget.id ?? "78857");
+
+    // fetchThisMovieFromApi(widget.id!);
+
+    // getCasts(widget.id!);
+    // getRecommendations(widget.id!);
   }
 
-  @override
-  void dispose() {
-    // TODO: implement dispose
-    super.dispose();
-  }
-
-  void fetchThisMovieFromApi(String id) async {
+  Future<List<SingleMovieModel>?> fetchThisMovieFromApi(String id) async {
     try {
+      print("fetchThisMovieFromApi provided in api = > $id");
       List<SingleMovieModel> data =
           await movieRepository.fetchSingleMovieData(id);
-      setState(() {
-        fetched = data;
-      });
-      print("fetched => $fetched");
+      print("fetched => $data");
+      return data;
     } catch (e) {
       print("line 52 $e");
+      // return e;
     }
   }
 
-  void getRecommendations(String id) async {
-    print("get Recommanded");
-    List<MovieModel> data =
-        await movieRepository.fetchRecommendedMovies(widget.id ?? "1077280");
-    print("recommended data => $data");
-    setState(() {
-      recommended = data;
-    });
+  Future<List<MovieModel>?> getRecommendations(String id) async {
+    try {
+      print("get Recommanded id $id");
+      List<MovieModel> data = await movieRepository.fetchRecommendedMovies(id);
+      print("recommended data => $data");
+      return data;
+    } catch (e) {
+      print("error at 64 dets => $e");
+    }
   }
 
-  void getCasts(String id) async {
+  Future<List<CastModel>?> getCasts(String id) async {
     try {
-      List<CastModel> data =
-          await movieRepository.fetchCasts(widget.id ?? "78857");
+      print("getcasts api => $id");
+      List<CastModel> data = await movieRepository.fetchCasts(id);
       var haveImgPath = data.where((e) => e.profilePath != null).toList();
-      print(" filteredCasts => $haveImgPath ");
-      setState(() {
-        casts = haveImgPath;
-      });
+
+      return haveImgPath;
     } catch (e) {
       print("err in dets L-36 is $e");
     }
@@ -84,17 +80,20 @@ class _DetailsPageState extends State<DetailsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: BlocBuilder<MovieCubit, MovieState>(
-        builder: (context, state) {
-          if (state is MovieLoadingState) {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-          if (state is MovieLoadedState) {
-            var movie = fetched?[0];
-            return SafeArea(
+    return FutureBuilder(
+      future: Future.wait([
+        fetchThisMovieFromApi(widget.id!),
+        getCasts(widget.id!),
+        getRecommendations(widget.id!)
+      ]),
+      builder: (context, AsyncSnapshot snapshot) {
+        if (snapshot.hasData) {
+          var movieData = snapshot.data![0][0];
+          var castData = snapshot.data![1];
+          var recommendedMov = snapshot.data![2];
+          print("snapshot data is => ${snapshot.data![0][0].backdropPath}");
+          return Scaffold(
+            body: SafeArea(
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Container(
@@ -109,7 +108,7 @@ class _DetailsPageState extends State<DetailsPage> {
                               width: double.infinity,
                               height: 210,
                               child: Image.network(
-                                  "${Const.IMG}${movie?.backdropPath ?? "/rqbCbjB19amtOtFQbb3K2lgm2zv.jpg"}"),
+                                  "${Const.IMG}${movieData?.backdropPath ?? "/rqbCbjB19amtOtFQbb3K2lgm2zv.jpg"}"),
                             ),
                             InkWell(
                               onTap: () => context.pop(),
@@ -132,11 +131,11 @@ class _DetailsPageState extends State<DetailsPage> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
                             Text(
-                              "${movie?.title ?? "no data title"}",
+                              "${movieData?.title ?? "no data title"}",
                               style: TextStyle(fontSize: 20),
                             ),
                             Text(
-                                "⭐ ${movie.voteAverage ?? "no rating"}/10 IMDb "),
+                                "⭐ ${movieData?.voteAverage ?? "no rating"}/10 IMDb "),
                           ],
                         ),
 
@@ -164,7 +163,8 @@ class _DetailsPageState extends State<DetailsPage> {
                                 <Widget>[Text("no thisMovieData")]),
                         Divider(height: 25),
                         SizedBox(
-                            child: Text("${movie.overview ?? "no overview"}")),
+                            child: Text(
+                                "${movieData?.overview ?? "no overview"}")),
 
                         SizedBox(
                           height: 20,
@@ -184,7 +184,7 @@ class _DetailsPageState extends State<DetailsPage> {
                                 SizedBox(
                                   height: 5,
                                 ),
-                                Text("${movie.releaseDate ?? "no date"}"),
+                                Text("${movieData?.releaseDate ?? "no date"}"),
                               ],
                             ),
                             Column(
@@ -197,7 +197,7 @@ class _DetailsPageState extends State<DetailsPage> {
                                   height: 5,
                                 ),
                                 Text(
-                                    "${movie.popularity ?? "no popularity"} %"),
+                                    "${movieData?.popularity ?? "no popularity"} %"),
                               ],
                             )
                           ],
@@ -218,7 +218,7 @@ class _DetailsPageState extends State<DetailsPage> {
                                   style: TextStyle(fontSize: 18),
                                 ),
                                 Text(
-                                    "${movie.originalLanguage ?? "originalLanguage empty"}")
+                                    "${movieData?.originalLanguage ?? "originalLanguage empty"}")
                               ],
                             ),
                             Column(
@@ -227,7 +227,7 @@ class _DetailsPageState extends State<DetailsPage> {
                                   "Budget ",
                                   style: TextStyle(fontSize: 18),
                                 ),
-                                Text("${movie.budget ?? " empty"}")
+                                Text("${movieData?.budget ?? " empty"}")
                               ],
                             ),
                           ],
@@ -253,14 +253,14 @@ class _DetailsPageState extends State<DetailsPage> {
                         SingleChildScrollView(
                           scrollDirection: Axis.horizontal,
                           child: Row(
-                              children: casts?.map((e) {
+                              children: castData?.map<Widget>((e) {
                                     return Container(
                                       child: Row(
                                         children: <Widget>[
                                           CircleAvatar(
                                             maxRadius: 30,
                                             backgroundImage: NetworkImage(
-                                                "${Const.IMG}${e.profilePath}"),
+                                                "${Const.IMG}${e.profilePath ?? "/rqbCbjB19amtOtFQbb3K2lgm2zv.jpg"}"),
                                           ),
                                           SizedBox(
                                             width: 10,
@@ -292,7 +292,7 @@ class _DetailsPageState extends State<DetailsPage> {
                         SingleChildScrollView(
                           scrollDirection: Axis.horizontal,
                           child: Row(
-                              children: recommended?.map((e) {
+                              children: recommendedMov?.map<Widget>((e) {
                                     return InkWell(
                                       onTap: () {
                                         context.pushNamed('details',
@@ -317,11 +317,14 @@ class _DetailsPageState extends State<DetailsPage> {
                   ),
                 ),
               ),
-            );
-          }
-          return Text("data");
-        },
-      ),
+            ),
+          );
+        } else {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+      },
     );
   }
 }
