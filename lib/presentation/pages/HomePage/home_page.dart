@@ -117,8 +117,7 @@ class HomePage extends StatelessWidget {
                                             //         context)
                                             //     .SingleMovieData("${e.id}");
 
-                                            context.pushNamed(
-                                                'details',
+                                            context.pushNamed('details',
                                                 params: {'id': "${e.id}"});
                                           },
                                           child: Container(
@@ -132,7 +131,7 @@ class HomePage extends StatelessWidget {
                                           )));
                                     })
                                     .toList()
-                                    .sublist(0, 5) ??
+                                    .sublist(11, 18) ??
                                 <Widget>[Text("no data")],
                           ),
                         ),
@@ -167,7 +166,13 @@ class HomePage extends StatelessWidget {
                               child: Row(
                                 children: state.popular_movies
                                         ?.map((e) {
-                                          return Side_by_side_movie_card(e);
+                                          return InkWell(
+                                              onTap: () async {
+                                                context.pushNamed('details',
+                                                    params: {'id': "${e.id}"});
+                                              },
+                                              child:
+                                                  Side_by_side_movie_card(e));
                                         })
                                         .toList()
                                         .sublist(0, 5) ??
@@ -204,7 +209,13 @@ class HomePage extends StatelessWidget {
                               child: Row(
                                 children: state.top_rated_movies
                                         ?.map((e) {
-                                          return Side_by_side_movie_card(e);
+                                          return InkWell(
+                                              onTap: () async {
+                                                context.pushNamed('details',
+                                                    params: {'id': "${e.id}"});
+                                              },
+                                              child:
+                                                  Side_by_side_movie_card(e));
                                         })
                                         .toList()
                                         .sublist(0, 5) ??
@@ -238,11 +249,17 @@ class HomePage extends StatelessWidget {
                             carouselController: CarouselController(),
                             items: state.trending_movies
                                     ?.map((e) {
-                                      return Container(
-                                        child: Image(
-                                          image: NetworkImage(
-                                              Const.IMG + "${e.posterPath}"),
-                                          height: 180,
+                                      return InkWell(
+                                        onTap: () async {
+                                          context.pushNamed('details',
+                                              params: {'id': "${e.id}"});
+                                        },
+                                        child: Container(
+                                          child: Image(
+                                            image: NetworkImage(
+                                                Const.IMG + "${e.posterPath}"),
+                                            height: 180,
+                                          ),
                                         ),
                                       );
                                     })

@@ -29,12 +29,29 @@ class _DetailsPageState extends State<DetailsPage> {
             );
           }
           if (state is MovieLoadedState) {
-            var data = state.now_playing_movies
-                ?.where((element) => element.id.toString() == widget.id)
-                .toList();
-            print("filtred data is $data");
-            var fd = data![0];
-            // return Text(fd.title.toString());
+            print(widget.id);
+            var allData = [
+              ...state.now_playing_movies!,
+              ...state.popular_movies!,
+              ...state.top_rated_movies!,
+              ...state.trending_movies!
+            ];
+            // var now_movies = state.now_playing_movies
+            //     ?.where((element) => element.id.toString() == widget.id)
+            //     .toList();
+            // var popMovies = state.popular_movies
+            //     ?.where((element) => element.id.toString() == widget.id)
+            //     .toList();
+            // var topMov =
+            //     state.top_rated_movies?.map((element) => element.id.toString() == widget.id).toList();
+            // var trendMov =
+            //     state.trending_movies?.map((element) => element.id.toString() == widget.id).toList();
+            var filteredData = allData.firstWhere((element) => element.id.toString() == widget.id);
+            
+            print(" filteredData => $filteredData");
+
+            var nm = filteredData;
+
             return SafeArea(
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -48,7 +65,7 @@ class _DetailsPageState extends State<DetailsPage> {
                         width: double.infinity,
                         height: 210,
                         child: Image.network(
-                            "${Const.IMG}${fd.backdropPath ?? "nodata"}"),
+                            "${Const.IMG}${nm.backdropPath ?? "nodata"}"),
                       ),
                       SizedBox(
                         height: 25,
@@ -57,10 +74,10 @@ class _DetailsPageState extends State<DetailsPage> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
                           Text(
-                            "${fd.originalTitle ?? "no data title"}",
+                            "${nm.originalTitle ?? "no data title"}",
                             style: TextStyle(fontSize: 20),
                           ),
-                          Text("⭐ ${fd.voteAverage}/10 IMDb "),
+                          Text("⭐ ${nm.voteAverage}/10 IMDb "),
                         ],
                       ),
 
@@ -70,7 +87,7 @@ class _DetailsPageState extends State<DetailsPage> {
 
                       //genre
                       Row(
-                          children: [1,2].map((e) {
+                          children: [1, 2].map((e) {
                                 return Container(
                                   width: 65,
                                   height: 25,
@@ -87,9 +104,7 @@ class _DetailsPageState extends State<DetailsPage> {
                               }).toList() ??
                               <Widget>[Text("no thisMovieData")]),
                       Divider(height: 25),
-                      SizedBox(
-                          child: Text(
-                              "${fd.overview ?? "no overview"}")),
+                      SizedBox(child: Text("${nm.overview ?? "no overview"}")),
 
                       SizedBox(
                         height: 20,
@@ -102,7 +117,7 @@ class _DetailsPageState extends State<DetailsPage> {
                       SizedBox(
                         height: 5,
                       ),
-                      Text("${fd.releaseDate ?? "no budget"}"),
+                      Text("${nm.releaseDate ?? "no budget"}"),
 
                       SizedBox(
                         height: 20,
@@ -113,11 +128,9 @@ class _DetailsPageState extends State<DetailsPage> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
                           Text(
-                            "Orignal Language \n ${fd.originalLanguage ?? "originalLanguage empty"}",
+                            "Orignal Language  \n\n ${nm.originalLanguage ?? "originalLanguage empty"}",
                             style: TextStyle(fontSize: 18),
                           ),
-                          Text("en-us"),
-                          
                         ],
                       ),
                       SizedBox(
@@ -126,17 +139,6 @@ class _DetailsPageState extends State<DetailsPage> {
 
                       SizedBox(
                         height: 20,
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text(
-                            "Tag-Line",
-                            style: TextStyle(fontSize: 18),
-                          ),
-                          SizedBox(height: 7),
-                         
-                        ],
                       ),
 
                       Padding(
