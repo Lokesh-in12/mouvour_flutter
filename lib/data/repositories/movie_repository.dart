@@ -92,7 +92,6 @@ class MovieRepository {
   }
 
   //fetchSingleMovieData
-  //get casta api
   Future<List<SingleMovieModel>> fetchSingleMovieData(String id) async {
     try {
       print("in repo FetchSingleMovieData and id => $id");
@@ -105,6 +104,22 @@ class MovieRepository {
 
       return singleMovieData
           .map((movieMap) => SingleMovieModel.fromJson(movieMap))
+          .toList();
+    } catch (e) {
+      throw (e);
+    }
+  }
+
+  //recommandations
+  Future<List<MovieModel>> fetchRecommendedMovies(String id) async {
+    try {
+      print("in repo fetchRecommendedMovies and id => $id");
+      Response response = await api.sendRequest.get(
+          '/movie/$id/recommendations?api_key=${API.API_KEY}&language=en-US&page=1');
+      List<dynamic> movieMaps = response.data['results'];
+
+      return movieMaps
+          .map((movieMap) => MovieModel.fromJson(movieMap))
           .toList();
     } catch (e) {
       throw (e);

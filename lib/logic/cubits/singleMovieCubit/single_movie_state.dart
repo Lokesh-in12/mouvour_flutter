@@ -11,7 +11,6 @@ class SingleMovieErrorState extends SingleMovieState {
 }
 
 class SingleMovieLoadedState extends SingleMovieState {
-  final List<dynamic>? movieDesc;
-  final List<dynamic>? casts;
-  SingleMovieLoadedState({this.movieDesc, this.casts});
+  final String? ex;
+  SingleMovieLoadedState({this.ex});
 }

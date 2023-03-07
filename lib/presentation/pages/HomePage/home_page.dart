@@ -55,20 +55,21 @@ class HomePage extends StatelessWidget {
                       ),
                       Container(
                           child: CarouselSlider(
-                        items: [1, 2, 3, 4].map((e) {
+                        items: state.now_playing_movies!.take(10).map((e) {
                           return InkWell(
                             onTap: () => GoRouter.of(context)
                                 .pushNamed('details', params: {'id': '2'}),
                             child: Container(
-                              width: 250,
-                              height: 150,
+                              width: MediaQuery.of(context).size.width,
+                              height: 210,
                               child: FittedBox(
                                 fit: BoxFit.cover,
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(10),
                                   child: Image(
                                     image: NetworkImage(
-                                        "https://wallpapercave.com/wp/wp10388105.jpg"),
+                                        "${Const.IMG}${e.backdropPath}"),
+                                    fit: BoxFit.cover,
                                   ),
                                 ),
                               ),
@@ -76,8 +77,12 @@ class HomePage extends StatelessWidget {
                           );
                         }).toList(),
                         options: CarouselOptions(
+                            pageViewKey: PageStorageKey(3),
+                            viewportFraction: 1,
+                            animateToClosest: true,
+                            scrollPhysics: BouncingScrollPhysics(),
                             autoPlay: true,
-                            enableInfiniteScroll: false,
+                            enableInfiniteScroll: true,
                             enlargeStrategy: CenterPageEnlargeStrategy.scale,
                             autoPlayInterval: Duration(seconds: 5)),
                       )),

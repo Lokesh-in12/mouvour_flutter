@@ -6,28 +6,13 @@ import 'package:mouvour_flutter/logic/cubits/singleMovieCubit/single_movie_state
 
 class SingleMovieCubit extends Cubit<SingleMovieState> {
   SingleMovieCubit() : super(SingleMovieLoadingState()) {
-    
+    toRemoveFromLoadingState();
   }
 
   MovieRepository movieRepository = MovieRepository();
 
-  //fetch Single Movie Data
-  void SingleMovieData(String id) async {
-    try {
-      print("in singleMovieData");
-      //movieDesc
-      List<SingleMovieModel> movieDesc =
-          await movieRepository.fetchSingleMovieData(id);
-
-      print("movieDesc => $movieDesc");
-
-      //getCasts
-      List<CastModel> casts = await movieRepository.fetchCasts(id);
-      print("in single movieData movieDesc => $movieDesc and casts $casts");
-      emit(SingleMovieLoadedState(movieDesc: movieDesc, casts: casts));
-    } catch (e) {
-      print("error is $e");
-      emit(SingleMovieErrorState(e.toString()));
-    }
+  void toRemoveFromLoadingState() {
+    Future.delayed(Duration(hours:1 ));
+    emit(SingleMovieLoadedState(ex: "emit"));
   }
 }
