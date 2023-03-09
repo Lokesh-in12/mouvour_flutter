@@ -15,6 +15,7 @@ import 'package:mouvour_flutter/presentation/pages/LikedMoviesPage/liked_movies_
 import 'package:mouvour_flutter/routes/app_routes.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
 
@@ -22,6 +23,7 @@ final GoRouter _router = GoRouter(
   routes: <RouteBase>[
     GoRoute(
       path: '/',
+      name: 'home',
       builder: (BuildContext context, GoRouterState state) =>
           // BlocProvider(create: (context) => MovieCubit(), child: HomePage()),
           MultiBlocProvider(providers: [

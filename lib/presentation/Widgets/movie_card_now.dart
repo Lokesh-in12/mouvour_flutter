@@ -11,30 +11,37 @@ class Movie_card_now extends StatelessWidget {
       width: 140,
       height: 280,
       child: Column(
+        
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          ClipRRect(
-              borderRadius: BorderRadius.circular(6),
-              child: Image(
-                image: NetworkImage(Const.IMG + "${e.posterPath}" ??
-                    "/rqbCbjB19amtOtFQbb3K2lgm2zv.jpg"),
-              )),
+          e.posterPath != null
+              ? ClipRRect(
+                  borderRadius: BorderRadius.circular(6),
+                  child: Image(
+                    image: NetworkImage("${Const.IMG}${e.posterPath}"),
+                  ))
+              : Text("Unavailable",style: TextStyle(color: Colors.white),),
           SizedBox(
             height: 10,
           ),
+          e.title != null ? 
           LimitedBox(
-            maxHeight: 50,
+            maxWidth: 30,
+            
             child: Text(
+              maxLines: 1,
               e.title.toString(),
               style: TextStyle(
                 fontSize: 15,
+                color: Colors.white
               ),
             ),
-          ),
+          ) : Text("Unavailable",style: TextStyle(color: Colors.white)),
           SizedBox(
             height: 8,
           ),
-          Text("⭐ ${e.voteAverage.toString()}/10 IMDb")
+          e.voteAverage != null ? 
+          Text("⭐ ${e.voteAverage.toString()}/10 IMDb",style: TextStyle(color: Colors.white)) : Text("Unavailable",style: TextStyle(color: Colors.white))
         ],
       ),
     );
