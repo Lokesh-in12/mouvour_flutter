@@ -27,14 +27,24 @@ class DetailsPage extends StatelessWidget {
     }
   }
 
-  Future<List<MovieModel>?> getRecommendations(String id) async {
+  // Future<List<MovieModel>?> getRecommendations(String id) async {
+  //   try {
+  //     print("get Recommanded id $id");
+  //     List<MovieModel> data = await movieRepository.fetchRecommendedMovies(id);
+  //     print("recommended data => $data");
+  //     return data;
+  //   } catch (e) {
+  //     print("error at 64 dets => $e");
+  //   }
+  // }
+  Future<List<MovieModel>?> getSimilarMovies(String id) async {
     try {
-      print("get Recommanded id $id");
-      List<MovieModel> data = await movieRepository.fetchRecommendedMovies(id);
-      print("recommended data => $data");
+      print("get similar id $id");
+      List<MovieModel> data = await movieRepository.fetchSimilarMovies(id);
+      print("similar data => $data");
       return data;
     } catch (e) {
-      print("error at 64 dets => $e");
+      print("error at 47 dets => $e");
     }
   }
 
@@ -53,20 +63,16 @@ class DetailsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: Future.wait([
-        fetchThisMovieFromApi(id!),
-        getCasts(id!),
-        getRecommendations(id!)
-      ]),
+      future: Future.wait(
+          [fetchThisMovieFromApi(id!), getCasts(id!), getSimilarMovies(id!)]),
       builder: (context, AsyncSnapshot snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
           var movieData = snapshot.data![0][0];
           var castData = snapshot.data![1];
-          var recommendedMov = snapshot.data![2];
+          var similarMov = snapshot.data![2];
           print("snapshot data is => ${snapshot.data![0][0].backdropPath}");
           return Scaffold(
-      backgroundColor: Colors.grey[900],
-
+            backgroundColor: Colors.grey[900],
             body: SafeArea(
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -88,7 +94,6 @@ class DetailsPage extends StatelessWidget {
                             InkWell(
                               onTap: () => context.pop(),
                               onLongPress: () => context.pushNamed('home'),
-                              
                               child: Container(
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(20),
@@ -111,11 +116,14 @@ class DetailsPage extends StatelessWidget {
                               maxWidth: 180,
                               child: Text(
                                 "${movieData?.title ?? "Unavailable"}",
-                                style: TextStyle(fontSize: 20,color: Colors.white),
+                                style: TextStyle(
+                                    fontSize: 20, color: Colors.white),
                               ),
                             ),
                             Text(
-                                "⭐ ${movieData?.voteAverage.toStringAsFixed(2) ?? "Unavailable"}/10 IMDb ",style: TextStyle(color: Colors.white),),
+                              "⭐ ${movieData?.voteAverage.toStringAsFixed(2) ?? "Unavailable"}/10 IMDb ",
+                              style: TextStyle(color: Colors.white),
+                            ),
                           ],
                         ),
 
@@ -142,7 +150,8 @@ class DetailsPage extends StatelessWidget {
                                           child: Text(
                                         maxLines: 1,
                                         "${e.name.toString()}".toUpperCase(),
-                                        style: TextStyle(fontSize: 11,color: Colors.black),
+                                        style: TextStyle(
+                                            fontSize: 11, color: Colors.black),
                                       )),
                                       SizedBox(
                                         width: 5,
@@ -156,7 +165,9 @@ class DetailsPage extends StatelessWidget {
                         Divider(height: 25),
                         SizedBox(
                             child: Text(
-                                "${movieData?.overview ?? "Unavailable"}",style: TextStyle(color: Colors.white),)),
+                          "${movieData?.overview ?? "Unavailable"}",
+                          style: TextStyle(color: Colors.white),
+                        )),
 
                         SizedBox(
                           height: 20,
@@ -172,26 +183,32 @@ class DetailsPage extends StatelessWidget {
                               children: <Widget>[
                                 Text(
                                   "Release Date",
-                                  style: TextStyle(fontSize: 18,color: Colors.white),
+                                  style: TextStyle(
+                                      fontSize: 18, color: Colors.white),
                                 ),
                                 SizedBox(
                                   height: 5,
                                 ),
                                 Text(
-                                    "${movieData?.releaseDate ?? "Unavailable"}",style: TextStyle(color: Colors.white),),
+                                  "${movieData?.releaseDate ?? "Unavailable"}",
+                                  style: TextStyle(color: Colors.white),
+                                ),
                               ],
                             ),
                             Column(
                               children: <Widget>[
                                 Text(
                                   "Popularity",
-                                  style: TextStyle(fontSize: 18,color: Colors.white),
+                                  style: TextStyle(
+                                      fontSize: 18, color: Colors.white),
                                 ),
                                 SizedBox(
                                   height: 5,
                                 ),
                                 Text(
-                                    "${movieData?.popularity ?? "Unavailable"} %",style: TextStyle(color: Colors.white),),
+                                  "${movieData?.popularity ?? "Unavailable"} %",
+                                  style: TextStyle(color: Colors.white),
+                                ),
                               ],
                             )
                           ],
@@ -210,19 +227,26 @@ class DetailsPage extends StatelessWidget {
                               children: <Widget>[
                                 Text(
                                   "Orignal Language ",
-                                  style: TextStyle(fontSize: 18,color: Colors.white),
+                                  style: TextStyle(
+                                      fontSize: 18, color: Colors.white),
                                 ),
                                 Text(
-                                    "${movieData?.originalLanguage ?? "Unavailable"}",style: TextStyle(color: Colors.white),)
+                                  "${movieData?.originalLanguage ?? "Unavailable"}",
+                                  style: TextStyle(color: Colors.white),
+                                )
                               ],
                             ),
                             Column(
                               children: <Widget>[
                                 Text(
                                   "Budget ",
-                                  style: TextStyle(fontSize: 18,color:Colors.white),
+                                  style: TextStyle(
+                                      fontSize: 18, color: Colors.white),
                                 ),
-                                Text("${movieData?.budget ?? " empty"} \$",style: TextStyle(color: Colors.white),)
+                                Text(
+                                  "${movieData?.budget ?? " empty"} \$",
+                                  style: TextStyle(color: Colors.white),
+                                )
                               ],
                             ),
                           ],
@@ -239,7 +263,7 @@ class DetailsPage extends StatelessWidget {
                           padding: const EdgeInsets.only(top: 20),
                           child: Text(
                             "Casts",
-                            style: TextStyle(fontSize: 20,color: Colors.white),
+                            style: TextStyle(fontSize: 20, color: Colors.white),
                           ),
                         ),
                         SizedBox(
@@ -258,7 +282,9 @@ class DetailsPage extends StatelessWidget {
                                                   backgroundImage: NetworkImage(
                                                       "${Const.IMG}${e.profilePath}"),
                                                 )
-                                              : Text("Unavailable",style: TextStyle(color: Colors.white)),
+                                              : Text("Unavailable",
+                                                  style: TextStyle(
+                                                      color: Colors.white)),
                                           SizedBox(
                                             width: 10,
                                           )
@@ -266,7 +292,12 @@ class DetailsPage extends StatelessWidget {
                                       ),
                                     );
                                   }).toList() ??
-                                  <Widget>[Text("Unavailable",style: TextStyle(color: Colors.white),)]),
+                                  <Widget>[
+                                    Text(
+                                      "Unavailable",
+                                      style: TextStyle(color: Colors.white),
+                                    )
+                                  ]),
                         ),
 
                         SizedBox(
@@ -276,8 +307,9 @@ class DetailsPage extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
                             Text(
-                              "Recommended",
-                              style: TextStyle(fontSize: 20,color: Colors.white),
+                              "Similar Movies",
+                              style:
+                                  TextStyle(fontSize: 20, color: Colors.white),
                             ),
                           ],
                         ),
@@ -285,11 +317,11 @@ class DetailsPage extends StatelessWidget {
                           height: 30,
                         ),
 
-                        //recomndations
+                        //similar Movies
                         SingleChildScrollView(
                           scrollDirection: Axis.horizontal,
                           child: Row(
-                              children: recommendedMov?.map<Widget>((e) {
+                              children: similarMov?.map<Widget>((e) {
                                     return InkWell(
                                       onTap: () {
                                         context.pushNamed('details',
@@ -307,7 +339,12 @@ class DetailsPage extends StatelessWidget {
                                       ),
                                     );
                                   }).toList() ??
-                                  <Widget>[Text("recommandaions",style: TextStyle(color: Colors.white),)]),
+                                  <Widget>[
+                                    Text(
+                                      "Similar movies Not Available",
+                                      style: TextStyle(color: Colors.white),
+                                    )
+                                  ]),
                         ),
                       ],
                     ),

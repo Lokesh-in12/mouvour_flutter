@@ -123,4 +123,20 @@ class MovieRepository {
       throw (e);
     }
   }
+
+  //similar
+  Future<List<MovieModel>> fetchSimilarMovies(String id) async {
+    try {
+      print("in repo fetchsimilar and id => $id");
+      Response response = await api.sendRequest.get(
+          '/movie/$id/similar?api_key=${API.API_KEY}&language=en-US&page=1');
+      List<dynamic> movieMaps = response.data['results'];
+
+      return movieMaps
+          .map((movieMap) => MovieModel.fromJson(movieMap))
+          .toList();
+    } catch (e) {
+      throw (e);
+    }
+  }
 }
