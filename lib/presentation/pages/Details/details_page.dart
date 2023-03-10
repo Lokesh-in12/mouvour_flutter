@@ -10,9 +10,21 @@ import 'package:mouvour_flutter/logic/cubits/Theme/theme_cubit.dart';
 import 'package:mouvour_flutter/presentation/Widgets/movie_card_now.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
-class DetailsPage extends StatelessWidget {
+class DetailsPage extends StatefulWidget {
   final String? id;
   DetailsPage({super.key, @required this.id});
+
+  @override
+  State<DetailsPage> createState() => _DetailsPageState();
+}
+
+class _DetailsPageState extends State<DetailsPage> {
+  @override
+  void deactivate() {
+    print("deactivated");
+    // TODO: implement deactivate
+    super.deactivate();
+  }
 
   // List<dynamic>? fetched;
   MovieRepository movieRepository = MovieRepository();
@@ -31,15 +43,6 @@ class DetailsPage extends StatelessWidget {
   }
 
   // Future<List<MovieModel>?> getRecommendations(String id) async {
-  //   try {
-  //     print("get Recommanded id $id");
-  //     List<MovieModel> data = await movieRepository.fetchRecommendedMovies(id);
-  //     print("recommended data => $data");
-  //     return data;
-  //   } catch (e) {
-  //     print("error at 64 dets => $e");
-  //   }
-  // }
   Future<List<MovieModel>?> getSimilarMovies(String id) async {
     try {
       print("get similar id $id");
@@ -67,8 +70,11 @@ class DetailsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     ThemeCubit theme = BlocProvider.of<ThemeCubit>(context, listen: true);
     return FutureBuilder(
-      future: Future.wait(
-          [fetchThisMovieFromApi(id!), getCasts(id!), getSimilarMovies(id!)]),
+      future: Future.wait([
+        fetchThisMovieFromApi(widget.id!),
+        getCasts(widget.id!),
+        getSimilarMovies(widget.id!)
+      ]),
       builder: (context, AsyncSnapshot snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
           var movieData = snapshot.data![0][0];
@@ -104,7 +110,8 @@ class DetailsPage extends StatelessWidget {
                                     : Text("Unavailable")),
                             InkWell(
                               onTap: () => context.pop(),
-                              onLongPress: () => context.pushNamed('home'),
+                              onLongPress: () =>
+                                  context.pushReplacementNamed("home"),
                               child: Container(
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(20),
@@ -335,13 +342,15 @@ class DetailsPage extends StatelessWidget {
                               children: similarMov?.map<Widget>((e) {
                                     return InkWell(
                                       onTap: () {
+                                        deactivate();
                                         context.pushNamed('details',
                                             params: {'id': "${e.id}"});
                                       },
                                       child: Container(
                                         child: Row(
                                           children: <Widget>[
-                                            Movie_card_now(e: e,isDark: theme.isDark),
+                                            Movie_card_now(
+                                                e: e, isDark: theme.isDark),
                                             SizedBox(
                                               width: 10,
                                             )

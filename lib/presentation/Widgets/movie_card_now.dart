@@ -16,20 +16,23 @@ class Movie_card_now extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           e.posterPath != null
-              ? ClipRRect(
-                  borderRadius: BorderRadius.circular(6),
-                  // child: Image(
-                  //   image: NetworkImage("${Const.IMG}${e.posterPath}"),
-                  // ))
-                  child: CachedNetworkImage(
-                    imageUrl: "${Const.IMG}${e.posterPath}",
-                    placeholder: (context, url) => Center(
-                        child: CircularProgressIndicator(
-                      color: Colors.grey,
-                    )),
-                    errorWidget: (context, url, error) =>
-                        Center(child: Icon(Icons.error)),
-                  ))
+              ? LimitedBox(
+                  maxHeight: 210,
+                  child: ClipRRect(
+                      borderRadius: BorderRadius.circular(6),
+                      // child: Image(
+                      //   image: NetworkImage("${Const.IMG}${e.posterPath}"),
+                      // ))
+                      child: CachedNetworkImage(
+                        imageUrl: "${Const.IMG}${e.posterPath}",
+                        placeholder: (context, url) => Center(
+                            child: CircularProgressIndicator(
+                          color: Colors.grey,
+                        )),
+                        errorWidget: (context, url, error) =>
+                            Center(child: Icon(Icons.error)),
+                      )),
+                )
               : Text(
                   "Unavailable",
                   style: TextStyle(color: isDark ? Colors.white : Colors.black),
