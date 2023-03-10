@@ -16,23 +16,20 @@ class Movie_card_now extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           e.posterPath != null
-              ? LimitedBox(
-                  maxHeight: 210,
-                  child: ClipRRect(
-                      borderRadius: BorderRadius.circular(6),
-                      // child: Image(
-                      //   image: NetworkImage("${Const.IMG}${e.posterPath}"),
-                      // ))
-                      child: CachedNetworkImage(
-                        imageUrl: "${Const.IMG}${e.posterPath}",
-                        placeholder: (context, url) => Center(
-                            child: CircularProgressIndicator(
-                          color: Colors.grey,
-                        )),
-                        errorWidget: (context, url, error) =>
-                            Center(child: Icon(Icons.error)),
-                      )),
-                )
+              ? ClipRRect(
+                  borderRadius: BorderRadius.circular(6),
+                  // child: Image(
+                  //   image: NetworkImage("${Const.IMG}${e.posterPath}"),
+                  // ))
+                  child: CachedNetworkImage(
+                    imageUrl: "${Const.IMG}${e.posterPath}",
+                    placeholder: (context, url) => Center(
+                        child: CircularProgressIndicator(
+                      color: Colors.grey,
+                    )),
+                    errorWidget: (context, url, error) =>
+                        Center(child: Icon(Icons.error)),
+                  ))
               : Text(
                   "Unavailable",
                   style: TextStyle(color: isDark ? Colors.white : Colors.black),
@@ -48,20 +45,20 @@ class Movie_card_now extends StatelessWidget {
                     e.title.toString(),
                     style: TextStyle(
                         fontSize: 15,
-                        color: isDark ? Colors.white : Colors.black),
+                        color: isDark == "true" ? Colors.white : Colors.black),
                   ),
                 )
               : Text("Unavailable",
                   style:
-                      TextStyle(color: isDark ? Colors.white : Colors.black)),
+                      TextStyle(color: isDark == "true" ? Colors.white : Colors.black)),
           SizedBox(
             height: 8,
           ),
           e.voteAverage != null
               ? Text("⭐ ${e.voteAverage.toString()}/10 IMDb",
-                  style: TextStyle(color: isDark ? Colors.white : Colors.black))
+                  style: TextStyle(color: isDark == "true" ? Colors.white : Colors.black))
               : Text("Unavailable",
-                  style: TextStyle(color: isDark ? Colors.white : Colors.black))
+                  style: TextStyle(color: isDark == "true" ? Colors.white : Colors.black))
         ],
       ),
     );

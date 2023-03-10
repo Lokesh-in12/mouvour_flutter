@@ -12,22 +12,26 @@ import 'package:cached_network_image/cached_network_image.dart';
 
 class DetailsPage extends StatefulWidget {
   final String? id;
-  DetailsPage({super.key, @required this.id});
+  final String? isDark;
+  DetailsPage({super.key, @required this.id, this.isDark});
 
   @override
   State<DetailsPage> createState() => _DetailsPageState();
 }
 
 class _DetailsPageState extends State<DetailsPage> {
+  // List<dynamic>? fetched;
+
   @override
   void deactivate() {
-    print("deactivated");
     // TODO: implement deactivate
+    print("deactivate");
     super.deactivate();
   }
 
-  // List<dynamic>? fetched;
   MovieRepository movieRepository = MovieRepository();
+
+  
 
   Future<List<SingleMovieModel>?> fetchThisMovieFromApi(String id) async {
     try {
@@ -68,13 +72,12 @@ class _DetailsPageState extends State<DetailsPage> {
 
   @override
   Widget build(BuildContext context) {
-    ThemeCubit theme = BlocProvider.of<ThemeCubit>(context, listen: true);
+    // ThemeCubit theme = BlocProvider.of<ThemeCubit>(context, listen: true);
+    // print("theme is =>> ${theme.isDark}");
+    print(" params=>>>>> ${widget.isDark.runtimeType}");
     return FutureBuilder(
-      future: Future.wait([
-        fetchThisMovieFromApi(widget.id!),
-        getCasts(widget.id!),
-        getSimilarMovies(widget.id!)
-      ]),
+      future: Future.wait(
+          [fetchThisMovieFromApi(widget.id!), getCasts(widget.id!), getSimilarMovies(widget.id!)]),
       builder: (context, AsyncSnapshot snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
           var movieData = snapshot.data![0][0];
@@ -82,7 +85,9 @@ class _DetailsPageState extends State<DetailsPage> {
           var similarMov = snapshot.data![2];
           print("snapshot data is => ${snapshot.data![0][0].backdropPath}");
           return Scaffold(
-            backgroundColor: Colors.grey[900],
+            backgroundColor: widget.isDark.toString() == "true"
+                ? Colors.grey[900]
+                : Colors.grey[200],
             body: SafeArea(
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -110,8 +115,7 @@ class _DetailsPageState extends State<DetailsPage> {
                                     : Text("Unavailable")),
                             InkWell(
                               onTap: () => context.pop(),
-                              onLongPress: () =>
-                                  context.pushReplacementNamed("home"),
+                              onLongPress: () => context.pushNamed('home'),
                               child: Container(
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(20),
@@ -135,12 +139,18 @@ class _DetailsPageState extends State<DetailsPage> {
                               child: Text(
                                 "${movieData?.title ?? "Unavailable"}",
                                 style: TextStyle(
-                                    fontSize: 20, color: Colors.white),
+                                    fontSize: 20,
+                                    color: widget.isDark == "true"
+                                        ? Colors.white
+                                        : Colors.black),
                               ),
                             ),
                             Text(
                               "⭐ ${movieData?.voteAverage.toStringAsFixed(2) ?? "Unavailable"}/10 IMDb ",
-                              style: TextStyle(color: Colors.white),
+                              style: TextStyle(
+                                  color: widget.isDark == "true"
+                                      ? Colors.white
+                                      : Colors.black),
                             ),
                           ],
                         ),
@@ -184,7 +194,10 @@ class _DetailsPageState extends State<DetailsPage> {
                         SizedBox(
                             child: Text(
                           "${movieData?.overview ?? "Unavailable"}",
-                          style: TextStyle(color: Colors.white),
+                          style: TextStyle(
+                              color: widget.isDark == "true"
+                                  ? Colors.white
+                                  : Colors.black),
                         )),
 
                         SizedBox(
@@ -202,14 +215,20 @@ class _DetailsPageState extends State<DetailsPage> {
                                 Text(
                                   "Release Date",
                                   style: TextStyle(
-                                      fontSize: 18, color: Colors.white),
+                                      fontSize: 18,
+                                      color: widget.isDark == "true"
+                                          ? Colors.white
+                                          : Colors.black),
                                 ),
                                 SizedBox(
                                   height: 5,
                                 ),
                                 Text(
                                   "${movieData?.releaseDate ?? "Unavailable"}",
-                                  style: TextStyle(color: Colors.white),
+                                  style: TextStyle(
+                                      color: widget.isDark == "true"
+                                          ? Colors.white
+                                          : Colors.black),
                                 ),
                               ],
                             ),
@@ -218,14 +237,20 @@ class _DetailsPageState extends State<DetailsPage> {
                                 Text(
                                   "Popularity",
                                   style: TextStyle(
-                                      fontSize: 18, color: Colors.white),
+                                      fontSize: 18,
+                                      color: widget.isDark == "true"
+                                          ? Colors.white
+                                          : Colors.black),
                                 ),
                                 SizedBox(
                                   height: 5,
                                 ),
                                 Text(
                                   "${movieData?.popularity ?? "Unavailable"} %",
-                                  style: TextStyle(color: Colors.white),
+                                  style: TextStyle(
+                                      color: widget.isDark == "true"
+                                          ? Colors.white
+                                          : Colors.black),
                                 ),
                               ],
                             )
@@ -246,11 +271,17 @@ class _DetailsPageState extends State<DetailsPage> {
                                 Text(
                                   "Orignal Language ",
                                   style: TextStyle(
-                                      fontSize: 18, color: Colors.white),
+                                      fontSize: 18,
+                                      color: widget.isDark == "true"
+                                          ? Colors.white
+                                          : Colors.black),
                                 ),
                                 Text(
                                   "${movieData?.originalLanguage ?? "Unavailable"}",
-                                  style: TextStyle(color: Colors.white),
+                                  style: TextStyle(
+                                      color: widget.isDark == "true"
+                                          ? Colors.white
+                                          : Colors.black),
                                 )
                               ],
                             ),
@@ -259,11 +290,17 @@ class _DetailsPageState extends State<DetailsPage> {
                                 Text(
                                   "Budget ",
                                   style: TextStyle(
-                                      fontSize: 18, color: Colors.white),
+                                      fontSize: 18,
+                                      color: widget.isDark == "true"
+                                          ? Colors.white
+                                          : Colors.black),
                                 ),
                                 Text(
                                   "${movieData?.budget ?? " empty"} \$",
-                                  style: TextStyle(color: Colors.white),
+                                  style: TextStyle(
+                                      color: widget.isDark == "true"
+                                          ? Colors.white
+                                          : Colors.black),
                                 )
                               ],
                             ),
@@ -281,7 +318,11 @@ class _DetailsPageState extends State<DetailsPage> {
                           padding: const EdgeInsets.only(top: 20),
                           child: Text(
                             "Casts",
-                            style: TextStyle(fontSize: 20, color: Colors.white),
+                            style: TextStyle(
+                                fontSize: 20,
+                                color: widget.isDark == "true"
+                                    ? Colors.white
+                                    : Colors.black),
                           ),
                         ),
                         SizedBox(
@@ -302,7 +343,9 @@ class _DetailsPageState extends State<DetailsPage> {
                                                 )
                                               : Text("Unavailable",
                                                   style: TextStyle(
-                                                      color: Colors.white)),
+                                                      color: widget.isDark == "true"
+                                                          ? Colors.white
+                                                          : Colors.black)),
                                           SizedBox(
                                             width: 10,
                                           )
@@ -313,7 +356,10 @@ class _DetailsPageState extends State<DetailsPage> {
                                   <Widget>[
                                     Text(
                                       "Unavailable",
-                                      style: TextStyle(color: Colors.white),
+                                      style: TextStyle(
+                                          color: widget.isDark == "true"
+                                              ? Colors.white
+                                              : Colors.black),
                                     )
                                   ]),
                         ),
@@ -326,8 +372,11 @@ class _DetailsPageState extends State<DetailsPage> {
                           children: <Widget>[
                             Text(
                               "Similar Movies",
-                              style:
-                                  TextStyle(fontSize: 20, color: Colors.white),
+                              style: TextStyle(
+                                  fontSize: 20,
+                                  color: widget.isDark == "true"
+                                      ? Colors.white
+                                      : Colors.black),
                             ),
                           ],
                         ),
@@ -350,7 +399,7 @@ class _DetailsPageState extends State<DetailsPage> {
                                         child: Row(
                                           children: <Widget>[
                                             Movie_card_now(
-                                                e: e, isDark: theme.isDark),
+                                                e: e, isDark: widget.isDark),
                                             SizedBox(
                                               width: 10,
                                             )
@@ -362,7 +411,10 @@ class _DetailsPageState extends State<DetailsPage> {
                                   <Widget>[
                                     Text(
                                       "Similar movies Not Available",
-                                      style: TextStyle(color: Colors.white),
+                                      style: TextStyle(
+                                          color: widget.isDark == "true"
+                                              ? Colors.white
+                                              : Colors.black),
                                     )
                                   ]),
                         ),

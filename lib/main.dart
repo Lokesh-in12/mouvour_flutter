@@ -63,11 +63,18 @@ final GoRouter _router = GoRouter(
           path: 'details/:id',
           name: 'details',
           builder: (BuildContext context, GoRouterState state) =>
-              MultiBlocProvider(providers: [
-            BlocProvider(
-              create: (context) => ThemeCubit(),
-            )
-          ], child: DetailsPage(id: state.params['id'])),
+              MultiBlocProvider(
+                  providers: [
+                BlocProvider(
+                  create: (context) => ThemeCubit(),
+                  lazy: false,
+                )
+              ],
+                  child: DetailsPage(
+                    id: state.params['id'],
+                    isDark: state.queryParams['isDark']
+                    ,
+                  )),
         ),
       ],
     ),
@@ -85,16 +92,6 @@ class MyApp extends StatelessWidget {
       theme: theme.isDark ? ThemeData.dark() : ThemeData.light(),
       routerConfig: _router,
       debugShowCheckedModeBanner: false,
-      // routes: {
-      //   Routes.home: (context) => BlocProvider(
-      //         create: (context) => MovieCubit(),
-      //         child: HomePage(),
-      //       ),
-      //   Routes.likedPage: (context) => LikedMoviesPage(),
-      //   Routes.explore: (context) => ExplorePage(),
-      //   Routes.discover: (context) => DiscoverPage(),
-      // },
-      // routerConfig: _router,
     );
   }
 }

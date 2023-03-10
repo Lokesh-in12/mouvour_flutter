@@ -22,6 +22,7 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     ThemeCubit theme = BlocProvider.of<ThemeCubit>(context, listen: true);
+    print("theme in home page = > ${theme.isDark}");
     return Scaffold(
       backgroundColor: theme.isDark ? Colors.grey[900] : Colors.grey[200],
       appBar: AppBar(
@@ -93,9 +94,10 @@ class HomePage extends StatelessWidget {
                           child: CarouselSlider(
                         items: state.now_playing_movies!.take(10).map((e) {
                           return InkWell(
-                            onTap: () => GoRouter.of(context).pushNamed(
-                                'details',
-                                params: {'id': '${e.id}'}),
+                            onTap: () => GoRouter.of(context)
+                                .pushNamed('details', params: {
+                              'id': '${e.id}',
+                            }),
                             child: Stack(
                               children: <Widget>[
                                 Container(
@@ -152,7 +154,7 @@ class HomePage extends StatelessWidget {
                       )),
 
                       SizedBox(
-                        height: 20,
+                        height: 30,
                       ),
                       //now showing
                       Row(
@@ -175,7 +177,7 @@ class HomePage extends StatelessWidget {
 
                       //movie_cards
                       SizedBox(
-                        height: 15,
+                        height: 20,
                       ),
                       Container(
                         // color: Colors.red,
@@ -193,8 +195,13 @@ class HomePage extends StatelessWidget {
                                             //         context)
                                             //     .SingleMovieData("${e.id}");
 
-                                            context.pushNamed('details',
-                                                params: {'id': "${e.id}"});
+                                            context
+                                                .pushNamed('details', params: {
+                                              'id': "${e.id}",
+                                            }, queryParams: {
+                                              "isDark":
+                                                  "${theme.isDark.toString()}"
+                                            });
                                           },
                                           child: Container(
                                               child: Row(
@@ -202,7 +209,7 @@ class HomePage extends StatelessWidget {
                                               // movie_card_now(e),
                                               Movie_card_now(
                                                 e: e,
-                                                isDark: theme.isDark,
+                                                isDark: theme.isDark.toString(),
                                               ),
                                               SizedBox(
                                                 width: 10,
@@ -235,13 +242,13 @@ class HomePage extends StatelessWidget {
                                   "Popular",
                                   style: TextStyle(
                                       fontSize: 20,
-                                      color: theme.isDark
+                                      color: theme.isDark.toString() == "true"
                                           ? Colors.white
                                           : Colors.black),
                                 ),
                                 Text("See more",
                                     style: TextStyle(
-                                        color: theme.isDark
+                                        color: theme.isDark.toString() == "true"
                                             ? Colors.white
                                             : Colors.black))
                               ],
@@ -288,13 +295,13 @@ class HomePage extends StatelessWidget {
                                   "Top Rated",
                                   style: TextStyle(
                                       fontSize: 20,
-                                      color: theme.isDark
+                                      color: theme.isDark.toString() == "true"
                                           ? Colors.white
                                           : Colors.black),
                                 ),
                                 Text("See more",
                                     style: TextStyle(
-                                        color: theme.isDark
+                                        color: theme.isDark.toString() == "true"
                                             ? Colors.white
                                             : Colors.black))
                               ],
@@ -338,12 +345,13 @@ class HomePage extends StatelessWidget {
                             "Trending Now",
                             style: TextStyle(
                                 fontSize: 20,
-                                color:
-                                    theme.isDark ? Colors.white : Colors.black),
+                                color: theme.isDark.toString() == "true"
+                                    ? Colors.white
+                                    : Colors.black),
                           ),
                           Text("See more",
                               style: TextStyle(
-                                  color: theme.isDark
+                                  color: theme.isDark.toString() == "true"
                                       ? Colors.white
                                       : Colors.black))
                         ],
@@ -405,7 +413,7 @@ class HomePage extends StatelessWidget {
 
       //bottom app bar start
       bottomNavigationBar: BottomAppBar(
-        color: theme.isDark ? Colors.black : Colors.white,
+        color: theme.isDark.toString() == "true" ? Colors.black : Colors.white,
         height: 55,
         child: Padding(
           padding: const EdgeInsets.fromLTRB(30, 0, 30, 0),
@@ -424,7 +432,9 @@ class HomePage extends StatelessWidget {
               CupertinoButton(
                   child: Icon(
                     Icons.explore_outlined,
-                    color: theme.isDark ? Colors.white:Colors.black ,
+                    color: theme.isDark.toString() == "true"
+                        ? Colors.white
+                        : Colors.black,
                     size: 27,
                   ),
                   onPressed: () => GoRouter.of(context).pushNamed('explore'))
