@@ -1,46 +1,20 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mouvour_flutter/data/consts/const.dart';
 import 'package:mouvour_flutter/data/models/cast_model.dart';
 import 'package:mouvour_flutter/data/models/movies_model.dart';
 import 'package:mouvour_flutter/data/models/sing/single_movie.dart';
-import 'package:mouvour_flutter/data/repositories/api/api.dart';
 import 'package:mouvour_flutter/data/repositories/movie_repository.dart';
-import 'package:mouvour_flutter/logic/cubits/movie_cubit.dart';
-import 'package:mouvour_flutter/logic/cubits/movie_state.dart';
-import 'package:mouvour_flutter/logic/cubits/singleMovieCubit/single_movie_cubit.dart';
-import 'package:mouvour_flutter/logic/cubits/singleMovieCubit/single_movie_state.dart';
 import 'package:mouvour_flutter/presentation/Widgets/movie_card_now.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
-class DetailsPage extends StatefulWidget {
+
+class DetailsPage extends StatelessWidget {
   final String? id;
-  const DetailsPage({super.key, @required this.id});
+  DetailsPage({super.key, @required this.id});
 
-  @override
-  State<DetailsPage> createState() => _DetailsPageState();
-}
-
-class _DetailsPageState extends State<DetailsPage> {
-  List<dynamic>? casts;
-  List<dynamic>? recommended;
   // List<dynamic>? fetched;
-
   MovieRepository movieRepository = MovieRepository();
-
-  @override
-  void initState() {
-    print(widget.id);
-    super.initState();
-
-    // fetchThisMovieFromApi(widget.id!);
-
-    // getCasts(widget.id!);
-    // getRecommendations(widget.id!);
-  }
 
   Future<List<SingleMovieModel>?> fetchThisMovieFromApi(String id) async {
     try {
@@ -55,14 +29,24 @@ class _DetailsPageState extends State<DetailsPage> {
     }
   }
 
-  Future<List<MovieModel>?> getRecommendations(String id) async {
+  // Future<List<MovieModel>?> getRecommendations(String id) async {
+  //   try {
+  //     print("get Recommanded id $id");
+  //     List<MovieModel> data = await movieRepository.fetchRecommendedMovies(id);
+  //     print("recommended data => $data");
+  //     return data;
+  //   } catch (e) {
+  //     print("error at 64 dets => $e");
+  //   }
+  // }
+  Future<List<MovieModel>?> getSimilarMovies(String id) async {
     try {
-      print("get Recommanded id $id");
-      List<MovieModel> data = await movieRepository.fetchRecommendedMovies(id);
-      print("recommended data => $data");
+      print("get similar id $id");
+      List<MovieModel> data = await movieRepository.fetchSimilarMovies(id);
+      print("similar data => $data");
       return data;
     } catch (e) {
-      print("error at 64 dets => $e");
+      print("error at 47 dets => $e");
     }
   }
 
@@ -81,18 +65,16 @@ class _DetailsPageState extends State<DetailsPage> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: Future.wait([
-        fetchThisMovieFromApi(widget.id!),
-        getCasts(widget.id!),
-        getRecommendations(widget.id!)
-      ]),
+      future: Future.wait(
+          [fetchThisMovieFromApi(id!), getCasts(id!), getSimilarMovies(id!)]),
       builder: (context, AsyncSnapshot snapshot) {
-        if (snapshot.hasData) {
+        if (snapshot.connectionState == ConnectionState.done) {
           var movieData = snapshot.data![0][0];
           var castData = snapshot.data![1];
-          var recommendedMov = snapshot.data![2];
+          var similarMov = snapshot.data![2];
           print("snapshot data is => ${snapshot.data![0][0].backdropPath}");
           return Scaffold(
+            backgroundColor: Colors.grey[900],
             body: SafeArea(
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -105,13 +87,18 @@ class _DetailsPageState extends State<DetailsPage> {
                         Stack(
                           children: <Widget>[
                             SizedBox(
-                              width: double.infinity,
-                              height: 210,
-                              child: Image.network(
-                                  "${Const.IMG}${movieData?.backdropPath ?? "/rqbCbjB19amtOtFQbb3K2lgm2zv.jpg"}"),
-                            ),
+                                width: double.infinity,
+                                height: 210,
+                                child: movieData.backdropPath != null
+                                    ? CachedNetworkImage(
+                                      imageUrl: "${Const.IMG}${movieData.backdropPath}",
+                                      placeholder: (context, url) => Center(child: CircularProgressIndicator(color: Colors.grey)),
+                                      errorWidget: (context, url, error) => Center(child: Icon(Icons.error)),
+                                    )
+                                    : Text("Unavailable")),
                             InkWell(
                               onTap: () => context.pop(),
+                              onLongPress: () => context.pushNamed('home'),
                               child: Container(
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(20),
@@ -130,12 +117,18 @@ class _DetailsPageState extends State<DetailsPage> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
-                            Text(
-                              "${movieData?.title ?? "no data title"}",
-                              style: TextStyle(fontSize: 20),
+                            LimitedBox(
+                              maxWidth: 180,
+                              child: Text(
+                                "${movieData?.title ?? "Unavailable"}",
+                                style: TextStyle(
+                                    fontSize: 20, color: Colors.white),
+                              ),
                             ),
                             Text(
-                                "⭐ ${movieData?.voteAverage ?? "no rating"}/10 IMDb "),
+                              "⭐ ${movieData?.voteAverage.toStringAsFixed(2) ?? "Unavailable"}/10 IMDb ",
+                              style: TextStyle(color: Colors.white),
+                            ),
                           ],
                         ),
 
@@ -144,27 +137,42 @@ class _DetailsPageState extends State<DetailsPage> {
                         ),
 
                         //genre
-                        Row(
-                            children: [1, 2].map((e) {
-                                  return Container(
-                                    width: 65,
-                                    height: 25,
-                                    decoration: BoxDecoration(
-                                      color: Color.fromARGB(206, 238, 204, 202),
-                                      borderRadius: BorderRadius.circular(20),
-                                    ),
-                                    child: Center(
-                                        child: Text(
-                                      "horror".toUpperCase(),
-                                      style: TextStyle(fontSize: 12),
-                                    )),
-                                  );
-                                }).toList() ??
-                                <Widget>[Text("no thisMovieData")]),
+                        SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                                  children: movieData?.genres.map<Widget>((e) {
+                                return Container(
+                                  width: 81,
+                                  height: 25,
+                                  decoration: BoxDecoration(
+                                    color: Color.fromARGB(206, 238, 204, 202),
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Center(
+                                          child: Text(
+                                        maxLines: 1,
+                                        "${e.name.toString()}".toUpperCase(),
+                                        style: TextStyle(
+                                            fontSize: 11, color: Colors.black),
+                                      )),
+                                      SizedBox(
+                                        width: 5,
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              }).toList()) ??
+                              Text("Unavailable"),
+                        ),
                         Divider(height: 25),
                         SizedBox(
                             child: Text(
-                                "${movieData?.overview ?? "no overview"}")),
+                          "${movieData?.overview ?? "Unavailable"}",
+                          style: TextStyle(color: Colors.white),
+                        )),
 
                         SizedBox(
                           height: 20,
@@ -176,28 +184,36 @@ class _DetailsPageState extends State<DetailsPage> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
                             Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
                                 Text(
                                   "Release Date",
-                                  style: TextStyle(fontSize: 18),
+                                  style: TextStyle(
+                                      fontSize: 18, color: Colors.white),
                                 ),
                                 SizedBox(
                                   height: 5,
                                 ),
-                                Text("${movieData?.releaseDate ?? "no date"}"),
+                                Text(
+                                  "${movieData?.releaseDate ?? "Unavailable"}",
+                                  style: TextStyle(color: Colors.white),
+                                ),
                               ],
                             ),
                             Column(
                               children: <Widget>[
                                 Text(
                                   "Popularity",
-                                  style: TextStyle(fontSize: 18),
+                                  style: TextStyle(
+                                      fontSize: 18, color: Colors.white),
                                 ),
                                 SizedBox(
                                   height: 5,
                                 ),
                                 Text(
-                                    "${movieData?.popularity ?? "no popularity"} %"),
+                                  "${movieData?.popularity ?? "Unavailable"} %",
+                                  style: TextStyle(color: Colors.white),
+                                ),
                               ],
                             )
                           ],
@@ -212,22 +228,30 @@ class _DetailsPageState extends State<DetailsPage> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
                             Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
                                 Text(
                                   "Orignal Language ",
-                                  style: TextStyle(fontSize: 18),
+                                  style: TextStyle(
+                                      fontSize: 18, color: Colors.white),
                                 ),
                                 Text(
-                                    "${movieData?.originalLanguage ?? "originalLanguage empty"}")
+                                  "${movieData?.originalLanguage ?? "Unavailable"}",
+                                  style: TextStyle(color: Colors.white),
+                                )
                               ],
                             ),
                             Column(
                               children: <Widget>[
                                 Text(
                                   "Budget ",
-                                  style: TextStyle(fontSize: 18),
+                                  style: TextStyle(
+                                      fontSize: 18, color: Colors.white),
                                 ),
-                                Text("${movieData?.budget ?? " empty"}")
+                                Text(
+                                  "${movieData?.budget ?? " empty"} \$",
+                                  style: TextStyle(color: Colors.white),
+                                )
                               ],
                             ),
                           ],
@@ -244,7 +268,7 @@ class _DetailsPageState extends State<DetailsPage> {
                           padding: const EdgeInsets.only(top: 20),
                           child: Text(
                             "Casts",
-                            style: TextStyle(fontSize: 20),
+                            style: TextStyle(fontSize: 20, color: Colors.white),
                           ),
                         ),
                         SizedBox(
@@ -257,11 +281,15 @@ class _DetailsPageState extends State<DetailsPage> {
                                     return Container(
                                       child: Row(
                                         children: <Widget>[
-                                          CircleAvatar(
-                                            maxRadius: 30,
-                                            backgroundImage: NetworkImage(
-                                                "${Const.IMG}${e.profilePath ?? "/rqbCbjB19amtOtFQbb3K2lgm2zv.jpg"}"),
-                                          ),
+                                          e.profilePath != null
+                                              ? CircleAvatar(
+                                                  maxRadius: 30,
+                                                  backgroundImage: NetworkImage(
+                                                      "${Const.IMG}${e.profilePath}"),
+                                                )
+                                              : Text("Unavailable",
+                                                  style: TextStyle(
+                                                      color: Colors.white)),
                                           SizedBox(
                                             width: 10,
                                           )
@@ -269,7 +297,12 @@ class _DetailsPageState extends State<DetailsPage> {
                                       ),
                                     );
                                   }).toList() ??
-                                  <Widget>[Text("no casts")]),
+                                  <Widget>[
+                                    Text(
+                                      "Unavailable",
+                                      style: TextStyle(color: Colors.white),
+                                    )
+                                  ]),
                         ),
 
                         SizedBox(
@@ -279,8 +312,9 @@ class _DetailsPageState extends State<DetailsPage> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
                             Text(
-                              "Recommended",
-                              style: TextStyle(fontSize: 20),
+                              "Similar Movies",
+                              style:
+                                  TextStyle(fontSize: 20, color: Colors.white),
                             ),
                           ],
                         ),
@@ -288,11 +322,11 @@ class _DetailsPageState extends State<DetailsPage> {
                           height: 30,
                         ),
 
-                        //recomndations
+                        //similar Movies
                         SingleChildScrollView(
                           scrollDirection: Axis.horizontal,
                           child: Row(
-                              children: recommendedMov?.map<Widget>((e) {
+                              children: similarMov?.map<Widget>((e) {
                                     return InkWell(
                                       onTap: () {
                                         context.pushNamed('details',
@@ -310,7 +344,12 @@ class _DetailsPageState extends State<DetailsPage> {
                                       ),
                                     );
                                   }).toList() ??
-                                  <Widget>[Text("recommandaions")]),
+                                  <Widget>[
+                                    Text(
+                                      "Similar movies Not Available",
+                                      style: TextStyle(color: Colors.white),
+                                    )
+                                  ]),
                         ),
                       ],
                     ),

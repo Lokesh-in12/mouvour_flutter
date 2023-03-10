@@ -12,15 +12,19 @@ import 'package:mouvour_flutter/logic/cubits/movie_cubit.dart';
 import 'package:mouvour_flutter/logic/cubits/movie_state.dart';
 import 'package:mouvour_flutter/logic/cubits/singleMovieCubit/single_movie_cubit.dart';
 import 'package:mouvour_flutter/logic/cubits/singleMovieCubit/single_movie_state.dart';
+import 'package:mouvour_flutter/presentation/Widgets/movie_card_now.dart';
 import 'package:mouvour_flutter/routes/app_routes.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[900],
       appBar: AppBar(
         leading: const Icon(Icons.menu),
         title: Text("Mouvour"),
+        backgroundColor: Colors.black,
         actions: const <Widget>[
           Icon(Icons.dark_mode),
           SizedBox(
@@ -43,7 +47,7 @@ class HomePage extends StatelessWidget {
 
           if (state is MovieLoadedState) {
             return Padding(
-              padding: const EdgeInsets.fromLTRB(10, 0, 20, 0),
+              padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
               child: Container(
                 width: double.infinity,
                 // color: Colors.grey[400],
@@ -51,28 +55,56 @@ class HomePage extends StatelessWidget {
                   child: Column(
                     children: <Widget>[
                       const SizedBox(
-                        height: 20,
+                        height: 5,
                       ),
                       Container(
                           child: CarouselSlider(
                         items: state.now_playing_movies!.take(10).map((e) {
                           return InkWell(
-                            onTap: () => GoRouter.of(context)
-                                .pushNamed('details', params: {'id': '2'}),
-                            child: Container(
-                              width: MediaQuery.of(context).size.width,
-                              height: 210,
-                              child: FittedBox(
-                                fit: BoxFit.cover,
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(10),
-                                  child: Image(
-                                    image: NetworkImage(
-                                        "${Const.IMG}${e.backdropPath}"),
+                            onTap: () => GoRouter.of(context).pushNamed(
+                                'details',
+                                params: {'id': '${e.id}'}),
+                            child: Stack(
+                              children: <Widget>[
+                                Container(
+                                  width: double.infinity,
+                                  height: 210,
+                                  child: FittedBox(
                                     fit: BoxFit.cover,
+                                    child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(10),
+                                        // child: Image(
+                                        //   image: NetworkImage(
+                                        //       "${Const.IMG}${e.backdropPath}"),
+                                        //   fit: BoxFit.cover,
+                                        // ),
+                                        child: CachedNetworkImage(
+                                          imageUrl:
+                                              "${Const.IMG}${e.backdropPath}",
+                                          placeholder: (context, url) =>
+                                              Container(
+                                                width:180,
+                                            child: Center(
+                                                child:
+                                                    CircularProgressIndicator(
+                                              color: Colors.grey,
+                                            )),
+                                          ),
+                                          errorWidget: (context, url, error) =>
+                                              Icon(Icons.error),
+                                        )),
                                   ),
                                 ),
-                              ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Align(
+                                    alignment: Alignment.bottomLeft,
+                                    child: Text("${e.title.toString()}",
+                                        style: TextStyle(
+                                            fontSize: 20, color: Colors.white)),
+                                  ),
+                                )
+                              ],
                             ),
                           );
                         }).toList(),
@@ -96,9 +128,10 @@ class HomePage extends StatelessWidget {
                         children: <Widget>[
                           Text(
                             "Now showing",
-                            style: TextStyle(fontSize: 20),
+                            style: TextStyle(fontSize: 20, color: Colors.white),
                           ),
-                          Text("See more")
+                          Text("See more",
+                              style: TextStyle(color: Colors.white))
                         ],
                       ),
 
@@ -128,13 +161,17 @@ class HomePage extends StatelessWidget {
                                           child: Container(
                                               child: Row(
                                             children: <Widget>[
-                                              movie_card_now(e),
+                                              // movie_card_now(e),
+                                              Movie_card_now(
+                                                e: e,
+                                              ),
                                               SizedBox(
                                                 width: 10,
                                               ),
                                             ],
                                           )));
                                     })
+                                    // .take(2)
                                     .toList()
                                     .sublist(11, 18) ??
                                 <Widget>[Text("no data")],
@@ -157,9 +194,11 @@ class HomePage extends StatelessWidget {
                               children: <Widget>[
                                 Text(
                                   "Popular",
-                                  style: TextStyle(fontSize: 20),
+                                  style: TextStyle(
+                                      fontSize: 20, color: Colors.white),
                                 ),
-                                Text("See more")
+                                Text("See more",
+                                    style: TextStyle(color: Colors.white))
                               ],
                             ),
                             SizedBox(
@@ -200,9 +239,11 @@ class HomePage extends StatelessWidget {
                               children: <Widget>[
                                 Text(
                                   "Top Rated",
-                                  style: TextStyle(fontSize: 20),
+                                  style: TextStyle(
+                                      fontSize: 20, color: Colors.white),
                                 ),
-                                Text("See more")
+                                Text("See more",
+                                    style: TextStyle(color: Colors.white))
                               ],
                             ),
                             SizedBox(
@@ -240,9 +281,10 @@ class HomePage extends StatelessWidget {
                         children: <Widget>[
                           Text(
                             "Trending Now",
-                            style: TextStyle(fontSize: 20),
+                            style: TextStyle(fontSize: 20, color: Colors.white),
                           ),
-                          Text("See more")
+                          Text("See more",
+                              style: TextStyle(color: Colors.white))
                         ],
                       ),
                       SizedBox(
@@ -260,10 +302,20 @@ class HomePage extends StatelessWidget {
                                               params: {'id': "${e.id}"});
                                         },
                                         child: Container(
-                                          child: Image(
-                                            image: NetworkImage(
-                                                Const.IMG + "${e.posterPath}"),
-                                            height: 180,
+                                          // child: Image(
+                                          //   image: NetworkImage(
+                                          //       Const.IMG + "${e.posterPath}"),
+                                          //   height: 180,
+                                          // ),
+                                          child: CachedNetworkImage(
+                                            imageUrl:
+                                                "${Const.IMG}${e.posterPath}",
+                                            placeholder: (context, url) =>
+                                                Center(
+                                                    child:
+                                                        CircularProgressIndicator(
+                                              color: Colors.grey,
+                                            )),
                                           ),
                                         ),
                                       );
@@ -292,6 +344,7 @@ class HomePage extends StatelessWidget {
 
       //bottom app bar start
       bottomNavigationBar: BottomAppBar(
+        color: Colors.black,
         height: 55,
         child: Padding(
           padding: const EdgeInsets.fromLTRB(30, 0, 30, 0),
@@ -310,7 +363,7 @@ class HomePage extends StatelessWidget {
               CupertinoButton(
                   child: Icon(
                     Icons.explore_outlined,
-                    color: Colors.black,
+                    color: Colors.white,
                     size: 27,
                   ),
                   onPressed: () => GoRouter.of(context).pushNamed('explore'))
@@ -321,14 +374,13 @@ class HomePage extends StatelessWidget {
       floatingActionButton: FloatingActionButton(
         onPressed: () => GoRouter.of(context).pushNamed('discover'),
         child: Icon(CupertinoIcons.lightbulb_fill),
-        backgroundColor: Color.fromARGB(255, 59, 59, 59),
+        backgroundColor: Colors.grey[900],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 
   Container movie_card_now(e) {
-    print(Const.IMG);
     return Container(
       width: 140,
       height: 280,
@@ -346,13 +398,17 @@ class HomePage extends StatelessWidget {
           Text(
             e.title.toString(),
             style: TextStyle(
+              color: Colors.white,
               fontSize: 15,
             ),
           ),
           SizedBox(
             height: 8,
           ),
-          Text("⭐ ${e.voteAverage.toString()}/10 IMDb")
+          Text(
+            "⭐ ${e.voteAverage.toString()}/10 IMDb",
+            style: TextStyle(color: Colors.white),
+          )
         ],
       ),
     );
@@ -364,9 +420,19 @@ class HomePage extends StatelessWidget {
       children: <Widget>[
         ClipRRect(
           borderRadius: BorderRadius.circular(6),
-          child: Image(
-            image: NetworkImage(Const.IMG + "${e.posterPath}"),
-            height: 180,
+          // child: Image(
+          //   image: NetworkImage(Const.IMG + "${e.posterPath}"),
+          //   height: 180,
+          // ),
+          child: CachedNetworkImage(
+            height: 210,
+            imageUrl: "${Const.IMG}${e.posterPath}",
+            placeholder: (context, url) => Center(
+                child: CircularProgressIndicator(
+              color: Colors.grey,
+            )),
+            errorWidget: (context, url, error) =>
+                Center(child: Icon(Icons.error)),
           ),
         ),
         const SizedBox(
@@ -386,9 +452,7 @@ class HomePage extends StatelessWidget {
                 maxWidth: 150,
                 child: Text(
                   e.title.toString(),
-                  style: TextStyle(
-                    fontSize: 19,
-                  ),
+                  style: TextStyle(fontSize: 19, color: Colors.white),
                 ),
               ),
               const SizedBox(
@@ -396,7 +460,7 @@ class HomePage extends StatelessWidget {
               ),
               Text(
                 "⭐ ${e.voteAverage.toString()}/10 IMDb",
-                style: TextStyle(fontSize: 16),
+                style: TextStyle(fontSize: 16, color: Colors.white),
               ),
               //genres - of side movie cards
               SizedBox(
@@ -416,7 +480,9 @@ class HomePage extends StatelessWidget {
                       child: Center(
                           child: Text(
                         "horror".toUpperCase(),
-                        style: TextStyle(fontSize: 12),
+                        style: TextStyle(
+                          fontSize: 12,
+                        ),
                       )),
                     ),
                     SizedBox(
@@ -467,8 +533,9 @@ class HomePage extends StatelessWidget {
                   Icon(
                     Icons.timer_outlined,
                     size: 20,
+                    color: Colors.white,
                   ),
-                  Text("1h 47m")
+                  Text("1h 47m", style: TextStyle(color: Colors.white))
                 ],
               )
             ],
