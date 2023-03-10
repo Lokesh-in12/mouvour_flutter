@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mouvour_flutter/data/consts/const.dart';
 import 'package:mouvour_flutter/data/models/cast_model.dart';
 import 'package:mouvour_flutter/data/models/movies_model.dart';
 import 'package:mouvour_flutter/data/models/sing/single_movie.dart';
 import 'package:mouvour_flutter/data/repositories/movie_repository.dart';
+import 'package:mouvour_flutter/logic/cubits/Theme/theme_cubit.dart';
 import 'package:mouvour_flutter/presentation/Widgets/movie_card_now.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-
 
 class DetailsPage extends StatelessWidget {
   final String? id;
@@ -64,6 +65,7 @@ class DetailsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    ThemeCubit theme = BlocProvider.of<ThemeCubit>(context, listen: true);
     return FutureBuilder(
       future: Future.wait(
           [fetchThisMovieFromApi(id!), getCasts(id!), getSimilarMovies(id!)]),
@@ -91,10 +93,14 @@ class DetailsPage extends StatelessWidget {
                                 height: 210,
                                 child: movieData.backdropPath != null
                                     ? CachedNetworkImage(
-                                      imageUrl: "${Const.IMG}${movieData.backdropPath}",
-                                      placeholder: (context, url) => Center(child: CircularProgressIndicator(color: Colors.grey)),
-                                      errorWidget: (context, url, error) => Center(child: Icon(Icons.error)),
-                                    )
+                                        imageUrl:
+                                            "${Const.IMG}${movieData.backdropPath}",
+                                        placeholder: (context, url) => Center(
+                                            child: CircularProgressIndicator(
+                                                color: Colors.grey)),
+                                        errorWidget: (context, url, error) =>
+                                            Center(child: Icon(Icons.error)),
+                                      )
                                     : Text("Unavailable")),
                             InkWell(
                               onTap: () => context.pop(),
@@ -335,7 +341,7 @@ class DetailsPage extends StatelessWidget {
                                       child: Container(
                                         child: Row(
                                           children: <Widget>[
-                                            Movie_card_now(e: e),
+                                            Movie_card_now(e: e,isDark: theme.isDark),
                                             SizedBox(
                                               width: 10,
                                             )

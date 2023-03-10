@@ -8,29 +8,61 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mouvour_flutter/data/consts/const.dart';
 import 'package:mouvour_flutter/data/models/movies_model.dart';
+import 'package:mouvour_flutter/logic/cubits/Theme/theme_cubit.dart';
 import 'package:mouvour_flutter/logic/cubits/movie_cubit.dart';
 import 'package:mouvour_flutter/logic/cubits/movie_state.dart';
 import 'package:mouvour_flutter/logic/cubits/singleMovieCubit/single_movie_cubit.dart';
 import 'package:mouvour_flutter/logic/cubits/singleMovieCubit/single_movie_state.dart';
 import 'package:mouvour_flutter/presentation/Widgets/movie_card_now.dart';
+import 'package:mouvour_flutter/presentation/Widgets/sidebyside_movie_card.dart';
 import 'package:mouvour_flutter/routes/app_routes.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    ThemeCubit theme = BlocProvider.of<ThemeCubit>(context, listen: true);
     return Scaffold(
-      backgroundColor: Colors.grey[900],
+      backgroundColor: theme.isDark ? Colors.grey[900] : Colors.grey[200],
       appBar: AppBar(
-        leading: const Icon(Icons.menu),
-        title: Text("Mouvour"),
-        backgroundColor: Colors.black,
-        actions: const <Widget>[
-          Icon(Icons.dark_mode),
-          SizedBox(
-            width: 15,
+        // leading: const Icon(Icons.menu),
+        title: Text("Mouvour ${theme.isDark ? "Dark mode" : "light Mode"}"),
+        backgroundColor: theme.isDark
+            ? Colors.grey[900]
+            : Color.fromARGB(255, 104, 104, 104),
+        // actions: <Widget>[
+        //   ,
+        //   SizedBox(
+        //     width: 15,
+        //   ),
+        // ],
+      ),
+      drawer: Drawer(
+        backgroundColor: theme.isDark ? Colors.black : Colors.white,
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(children: <Widget>[
+              Row(
+                children: <Widget>[
+                  IconButton(
+                      onPressed: () {
+                        theme.changeTheme();
+                      },
+                      icon:
+                          Icon(theme.isDark ? Icons.wb_sunny : Icons.dark_mode),
+                      color: theme.isDark ? Colors.white : Colors.black),
+                  Text(
+                    "Switch to ${theme.isDark ? "light" : "dark"} mode",
+                    style: TextStyle(
+                        fontSize: 16,
+                        color: theme.isDark ? Colors.white : Colors.black),
+                  )
+                ],
+              ),
+            ]),
           ),
-        ],
+        ),
       ),
       body: BlocConsumer<MovieCubit, MovieState>(
         listener: (context, state) {
@@ -83,7 +115,7 @@ class HomePage extends StatelessWidget {
                                               "${Const.IMG}${e.backdropPath}",
                                           placeholder: (context, url) =>
                                               Container(
-                                                width:180,
+                                            width: 180,
                                             child: Center(
                                                 child:
                                                     CircularProgressIndicator(
@@ -128,10 +160,16 @@ class HomePage extends StatelessWidget {
                         children: <Widget>[
                           Text(
                             "Now showing",
-                            style: TextStyle(fontSize: 20, color: Colors.white),
+                            style: TextStyle(
+                                fontSize: 20,
+                                color:
+                                    theme.isDark ? Colors.white : Colors.black),
                           ),
                           Text("See more",
-                              style: TextStyle(color: Colors.white))
+                              style: TextStyle(
+                                  color: theme.isDark
+                                      ? Colors.white
+                                      : Colors.black))
                         ],
                       ),
 
@@ -164,6 +202,7 @@ class HomePage extends StatelessWidget {
                                               // movie_card_now(e),
                                               Movie_card_now(
                                                 e: e,
+                                                isDark: theme.isDark,
                                               ),
                                               SizedBox(
                                                 width: 10,
@@ -195,10 +234,16 @@ class HomePage extends StatelessWidget {
                                 Text(
                                   "Popular",
                                   style: TextStyle(
-                                      fontSize: 20, color: Colors.white),
+                                      fontSize: 20,
+                                      color: theme.isDark
+                                          ? Colors.white
+                                          : Colors.black),
                                 ),
                                 Text("See more",
-                                    style: TextStyle(color: Colors.white))
+                                    style: TextStyle(
+                                        color: theme.isDark
+                                            ? Colors.white
+                                            : Colors.black))
                               ],
                             ),
                             SizedBox(
@@ -215,8 +260,10 @@ class HomePage extends StatelessWidget {
                                                 context.pushNamed('details',
                                                     params: {'id': "${e.id}"});
                                               },
-                                              child:
-                                                  Side_by_side_movie_card(e));
+                                              child: SideBySideCard(
+                                                e: e,
+                                                isDark: theme.isDark,
+                                              ));
                                         })
                                         .toList()
                                         .sublist(0, 5) ??
@@ -240,10 +287,16 @@ class HomePage extends StatelessWidget {
                                 Text(
                                   "Top Rated",
                                   style: TextStyle(
-                                      fontSize: 20, color: Colors.white),
+                                      fontSize: 20,
+                                      color: theme.isDark
+                                          ? Colors.white
+                                          : Colors.black),
                                 ),
                                 Text("See more",
-                                    style: TextStyle(color: Colors.white))
+                                    style: TextStyle(
+                                        color: theme.isDark
+                                            ? Colors.white
+                                            : Colors.black))
                               ],
                             ),
                             SizedBox(
@@ -260,8 +313,10 @@ class HomePage extends StatelessWidget {
                                                 context.pushNamed('details',
                                                     params: {'id': "${e.id}"});
                                               },
-                                              child:
-                                                  Side_by_side_movie_card(e));
+                                              child: SideBySideCard(
+                                                e: e,
+                                                isDark: theme.isDark,
+                                              ));
                                         })
                                         .toList()
                                         .sublist(0, 5) ??
@@ -281,10 +336,16 @@ class HomePage extends StatelessWidget {
                         children: <Widget>[
                           Text(
                             "Trending Now",
-                            style: TextStyle(fontSize: 20, color: Colors.white),
+                            style: TextStyle(
+                                fontSize: 20,
+                                color:
+                                    theme.isDark ? Colors.white : Colors.black),
                           ),
                           Text("See more",
-                              style: TextStyle(color: Colors.white))
+                              style: TextStyle(
+                                  color: theme.isDark
+                                      ? Colors.white
+                                      : Colors.black))
                         ],
                       ),
                       SizedBox(
@@ -344,7 +405,7 @@ class HomePage extends StatelessWidget {
 
       //bottom app bar start
       bottomNavigationBar: BottomAppBar(
-        color: Colors.black,
+        color: theme.isDark ? Colors.black : Colors.white,
         height: 55,
         child: Padding(
           padding: const EdgeInsets.fromLTRB(30, 0, 30, 0),
@@ -363,7 +424,7 @@ class HomePage extends StatelessWidget {
               CupertinoButton(
                   child: Icon(
                     Icons.explore_outlined,
-                    color: Colors.white,
+                    color: theme.isDark ? Colors.white:Colors.black ,
                     size: 27,
                   ),
                   onPressed: () => GoRouter.of(context).pushNamed('explore'))
@@ -411,137 +472,6 @@ class HomePage extends StatelessWidget {
           )
         ],
       ),
-    );
-  }
-
-  Row Side_by_side_movie_card(e) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        ClipRRect(
-          borderRadius: BorderRadius.circular(6),
-          // child: Image(
-          //   image: NetworkImage(Const.IMG + "${e.posterPath}"),
-          //   height: 180,
-          // ),
-          child: CachedNetworkImage(
-            height: 210,
-            imageUrl: "${Const.IMG}${e.posterPath}",
-            placeholder: (context, url) => Center(
-                child: CircularProgressIndicator(
-              color: Colors.grey,
-            )),
-            errorWidget: (context, url, error) =>
-                Center(child: Icon(Icons.error)),
-          ),
-        ),
-        const SizedBox(
-          width: 20.5,
-        ),
-        Container(
-          // color: Colors.lightBlue,
-          width: 222,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              //title
-              const SizedBox(
-                height: 5,
-              ),
-              LimitedBox(
-                maxWidth: 150,
-                child: Text(
-                  e.title.toString(),
-                  style: TextStyle(fontSize: 19, color: Colors.white),
-                ),
-              ),
-              const SizedBox(
-                height: 15,
-              ),
-              Text(
-                "⭐ ${e.voteAverage.toString()}/10 IMDb",
-                style: TextStyle(fontSize: 16, color: Colors.white),
-              ),
-              //genres - of side movie cards
-              SizedBox(
-                height: 15,
-              ),
-              LimitedBox(
-                maxWidth: 210,
-                child: Row(
-                  children: <Widget>[
-                    Container(
-                      width: 65,
-                      height: 25,
-                      decoration: BoxDecoration(
-                        color: Color.fromARGB(206, 238, 204, 202),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Center(
-                          child: Text(
-                        "horror".toUpperCase(),
-                        style: TextStyle(
-                          fontSize: 12,
-                        ),
-                      )),
-                    ),
-                    SizedBox(
-                      width: 5,
-                    ),
-                    Container(
-                      width: 65,
-                      height: 25,
-                      decoration: BoxDecoration(
-                        color: Color.fromARGB(206, 238, 204, 202),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Center(
-                          child: Text(
-                        "horror".toUpperCase(),
-                        style: TextStyle(fontSize: 12),
-                      )),
-                    ),
-                    SizedBox(
-                      width: 5,
-                    ),
-                    Container(
-                      width: 65,
-                      height: 25,
-                      decoration: BoxDecoration(
-                        color: Color.fromARGB(206, 238, 204, 202),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Center(
-                          child: Text(
-                        "horror".toUpperCase(),
-                        style: TextStyle(fontSize: 12),
-                      )),
-                    ),
-                    SizedBox(
-                      width: 5,
-                    ),
-                  ],
-                ),
-              ),
-
-              //time of a movie
-              SizedBox(
-                height: 10,
-              ),
-              Row(
-                children: const <Widget>[
-                  Icon(
-                    Icons.timer_outlined,
-                    size: 20,
-                    color: Colors.white,
-                  ),
-                  Text("1h 47m", style: TextStyle(color: Colors.white))
-                ],
-              )
-            ],
-          ),
-        )
-      ],
     );
   }
 }

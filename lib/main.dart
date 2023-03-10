@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mouvour_flutter/data/models/movies_model.dart';
 import 'package:mouvour_flutter/data/repositories/movie_repository.dart';
+import 'package:mouvour_flutter/logic/cubits/Theme/theme_cubit.dart';
 import 'package:mouvour_flutter/logic/cubits/movie_cubit.dart';
 import 'package:mouvour_flutter/logic/cubits/singleMovieCubit/single_movie_cubit.dart';
 import 'package:mouvour_flutter/presentation/pages/Details/details_page.dart';
@@ -18,7 +19,11 @@ import 'package:mouvour_flutter/presentation/pages/LikedMoviesPage/liked_movies_
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   DartPluginRegistrant.ensureInitialized();
-  runApp(const MyApp());
+  runApp(MultiBlocProvider(providers: [
+    BlocProvider(
+      create: (context) => ThemeCubit(),
+    ),
+  ], child: MyApp()));
 }
 
 final GoRouter _router = GoRouter(
@@ -33,7 +38,7 @@ final GoRouter _router = GoRouter(
           create: (context) => MovieCubit(),
         ),
         BlocProvider(
-          create: (context) => SingleMovieCubit(),
+          create: (context) => ThemeCubit(),
         )
       ], child: HomePage()),
       routes: <RouteBase>[
@@ -57,9 +62,12 @@ final GoRouter _router = GoRouter(
         GoRoute(
           path: 'details/:id',
           name: 'details',
-          builder: (BuildContext context, GoRouterState state) => BlocProvider(
-              create: (context) => MovieCubit(),
-              child: DetailsPage(id: state.params['id'])),
+          builder: (BuildContext context, GoRouterState state) =>
+              MultiBlocProvider(providers: [
+            BlocProvider(
+              create: (context) => ThemeCubit(),
+            )
+          ], child: DetailsPage(id: state.params['id'])),
         ),
       ],
     ),
@@ -71,11 +79,10 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    ThemeCubit theme = BlocProvider.of<ThemeCubit>(context, listen: true);
     return MaterialApp.router(
       title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
+      theme: theme.isDark ? ThemeData.dark() : ThemeData.light(),
       routerConfig: _router,
       debugShowCheckedModeBanner: false,
       // routes: {
