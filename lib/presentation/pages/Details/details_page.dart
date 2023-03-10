@@ -6,6 +6,8 @@ import 'package:mouvour_flutter/data/models/movies_model.dart';
 import 'package:mouvour_flutter/data/models/sing/single_movie.dart';
 import 'package:mouvour_flutter/data/repositories/movie_repository.dart';
 import 'package:mouvour_flutter/presentation/Widgets/movie_card_now.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+
 
 class DetailsPage extends StatelessWidget {
   final String? id;
@@ -88,8 +90,11 @@ class DetailsPage extends StatelessWidget {
                                 width: double.infinity,
                                 height: 210,
                                 child: movieData.backdropPath != null
-                                    ? Image.network(
-                                        "${Const.IMG}${movieData?.backdropPath}")
+                                    ? CachedNetworkImage(
+                                      imageUrl: "${Const.IMG}${movieData.backdropPath}",
+                                      placeholder: (context, url) => Center(child: CircularProgressIndicator(color: Colors.grey)),
+                                      errorWidget: (context, url, error) => Center(child: Icon(Icons.error)),
+                                    )
                                     : Text("Unavailable")),
                             InkWell(
                               onTap: () => context.pop(),

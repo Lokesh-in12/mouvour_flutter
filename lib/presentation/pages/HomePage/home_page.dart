@@ -12,7 +12,9 @@ import 'package:mouvour_flutter/logic/cubits/movie_cubit.dart';
 import 'package:mouvour_flutter/logic/cubits/movie_state.dart';
 import 'package:mouvour_flutter/logic/cubits/singleMovieCubit/single_movie_cubit.dart';
 import 'package:mouvour_flutter/logic/cubits/singleMovieCubit/single_movie_state.dart';
+import 'package:mouvour_flutter/presentation/Widgets/movie_card_now.dart';
 import 'package:mouvour_flutter/routes/app_routes.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class HomePage extends StatelessWidget {
   @override
@@ -59,23 +61,38 @@ class HomePage extends StatelessWidget {
                           child: CarouselSlider(
                         items: state.now_playing_movies!.take(10).map((e) {
                           return InkWell(
-                            onTap: () => GoRouter.of(context)
-                                .pushNamed('details', params: {'id': '2'}),
+                            onTap: () => GoRouter.of(context).pushNamed(
+                                'details',
+                                params: {'id': '${e.id}'}),
                             child: Stack(
                               children: <Widget>[
                                 Container(
-                                  width: MediaQuery.of(context).size.width,
+                                  width: double.infinity,
                                   height: 210,
                                   child: FittedBox(
                                     fit: BoxFit.cover,
                                     child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(10),
-                                      child: Image(
-                                        image: NetworkImage(
-                                            "${Const.IMG}${e.backdropPath}"),
-                                        fit: BoxFit.cover,
-                                      ),
-                                    ),
+                                        borderRadius: BorderRadius.circular(10),
+                                        // child: Image(
+                                        //   image: NetworkImage(
+                                        //       "${Const.IMG}${e.backdropPath}"),
+                                        //   fit: BoxFit.cover,
+                                        // ),
+                                        child: CachedNetworkImage(
+                                          imageUrl:
+                                              "${Const.IMG}${e.backdropPath}",
+                                          placeholder: (context, url) =>
+                                              Container(
+                                                width:180,
+                                            child: Center(
+                                                child:
+                                                    CircularProgressIndicator(
+                                              color: Colors.grey,
+                                            )),
+                                          ),
+                                          errorWidget: (context, url, error) =>
+                                              Icon(Icons.error),
+                                        )),
                                   ),
                                 ),
                                 Padding(
@@ -144,13 +161,17 @@ class HomePage extends StatelessWidget {
                                           child: Container(
                                               child: Row(
                                             children: <Widget>[
-                                              movie_card_now(e),
+                                              // movie_card_now(e),
+                                              Movie_card_now(
+                                                e: e,
+                                              ),
                                               SizedBox(
                                                 width: 10,
                                               ),
                                             ],
                                           )));
                                     })
+                                    // .take(2)
                                     .toList()
                                     .sublist(11, 18) ??
                                 <Widget>[Text("no data")],
@@ -281,10 +302,20 @@ class HomePage extends StatelessWidget {
                                               params: {'id': "${e.id}"});
                                         },
                                         child: Container(
-                                          child: Image(
-                                            image: NetworkImage(
-                                                Const.IMG + "${e.posterPath}"),
-                                            height: 180,
+                                          // child: Image(
+                                          //   image: NetworkImage(
+                                          //       Const.IMG + "${e.posterPath}"),
+                                          //   height: 180,
+                                          // ),
+                                          child: CachedNetworkImage(
+                                            imageUrl:
+                                                "${Const.IMG}${e.posterPath}",
+                                            placeholder: (context, url) =>
+                                                Center(
+                                                    child:
+                                                        CircularProgressIndicator(
+                                              color: Colors.grey,
+                                            )),
                                           ),
                                         ),
                                       );
@@ -389,9 +420,19 @@ class HomePage extends StatelessWidget {
       children: <Widget>[
         ClipRRect(
           borderRadius: BorderRadius.circular(6),
-          child: Image(
-            image: NetworkImage(Const.IMG + "${e.posterPath}"),
-            height: 180,
+          // child: Image(
+          //   image: NetworkImage(Const.IMG + "${e.posterPath}"),
+          //   height: 180,
+          // ),
+          child: CachedNetworkImage(
+            height: 210,
+            imageUrl: "${Const.IMG}${e.posterPath}",
+            placeholder: (context, url) => Center(
+                child: CircularProgressIndicator(
+              color: Colors.grey,
+            )),
+            errorWidget: (context, url, error) =>
+                Center(child: Icon(Icons.error)),
           ),
         ),
         const SizedBox(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mouvour_flutter/data/consts/const.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class Movie_card_now extends StatelessWidget {
   dynamic e;
@@ -17,8 +18,13 @@ class Movie_card_now extends StatelessWidget {
           e.posterPath != null
               ? ClipRRect(
                   borderRadius: BorderRadius.circular(6),
-                  child: Image(
-                    image: NetworkImage("${Const.IMG}${e.posterPath}"),
+                  // child: Image(
+                  //   image: NetworkImage("${Const.IMG}${e.posterPath}"),
+                  // ))
+                  child : CachedNetworkImage(
+                    imageUrl: "${Const.IMG}${e.posterPath}",
+                    placeholder: (context, url) => Center(child: CircularProgressIndicator(color: Colors.grey,)),
+                    errorWidget: (context, url, error) => Center(child: Icon(Icons.error)),
                   ))
               : Text("Unavailable",style: TextStyle(color: Colors.white),),
           SizedBox(
