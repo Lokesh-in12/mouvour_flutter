@@ -145,11 +145,9 @@ class HomePage extends StatelessWidget {
                         options: CarouselOptions(
                             pageViewKey: PageStorageKey(3),
                             viewportFraction: 1,
-                            animateToClosest: true,
                             scrollPhysics: BouncingScrollPhysics(),
-                            autoPlay: true,
-                            enableInfiniteScroll: true,
-                            enlargeStrategy: CenterPageEnlargeStrategy.scale,
+                            // autoPlay: true,
+                            // enableInfiniteScroll: true,
                             autoPlayInterval: Duration(seconds: 5)),
                       )),
 
@@ -189,12 +187,6 @@ class HomePage extends StatelessWidget {
                                     ?.map((e) {
                                       return InkWell(
                                           onTap: () async {
-                                            // BlocProvider.of<SingleMovieCubit>(context)
-                                            //     .emit(SingleMovieLoadingState("${e.id}"));
-                                            // BlocProvider.of<SingleMovieCubit>(
-                                            //         context)
-                                            //     .SingleMovieData("${e.id}");
-
                                             context
                                                 .pushNamed('details', params: {
                                               'id': "${e.id}",
@@ -265,7 +257,13 @@ class HomePage extends StatelessWidget {
                                           return InkWell(
                                               onTap: () async {
                                                 context.pushNamed('details',
-                                                    params: {'id': "${e.id}"});
+                                                    params: {
+                                                      'id': "${e.id}",
+                                                    },
+                                                    queryParams: {
+                                                      "isDark":
+                                                          "${theme.isDark.toString()}"
+                                                    });
                                               },
                                               child: SideBySideCard(
                                                 e: e,
@@ -318,7 +316,13 @@ class HomePage extends StatelessWidget {
                                           return InkWell(
                                               onTap: () async {
                                                 context.pushNamed('details',
-                                                    params: {'id': "${e.id}"});
+                                                    params: {
+                                                      'id': "${e.id}",
+                                                    },
+                                                    queryParams: {
+                                                      "isDark":
+                                                          "${theme.isDark.toString()}"
+                                                    });
                                               },
                                               child: SideBySideCard(
                                                 e: e,
@@ -367,8 +371,12 @@ class HomePage extends StatelessWidget {
                                     ?.map((e) {
                                       return InkWell(
                                         onTap: () async {
-                                          context.pushNamed('details',
-                                              params: {'id': "${e.id}"});
+                                          context.pushNamed('details', params: {
+                                            'id': "${e.id}",
+                                          }, queryParams: {
+                                            "isDark":
+                                                "${theme.isDark.toString()}"
+                                          });
                                         },
                                         child: Container(
                                           // child: Image(

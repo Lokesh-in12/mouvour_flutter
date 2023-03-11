@@ -79,11 +79,9 @@ class MovieRepository {
   //get casta api
   Future<List<CastModel>> fetchCasts(String id) async {
     try {
-      print("in repo fetchCasts");
       Response response = await api.sendRequest.get(
           "https://api.themoviedb.org/3/movie/$id/credits?api_key=${API.API_KEY}&language=en-US");
       List<dynamic> castMaps = response.data['cast'];
-      print("castMaps 78857==>>>>> $castMaps");
 
       return castMaps.map((movieMap) => CastModel.fromJson(movieMap)).toList();
     } catch (e) {

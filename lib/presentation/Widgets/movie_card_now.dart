@@ -32,7 +32,8 @@ class Movie_card_now extends StatelessWidget {
                   ))
               : Text(
                   "Unavailable",
-                  style: TextStyle(color: isDark ? Colors.white : Colors.black),
+                  style: TextStyle(
+                      color: isDark == "true" ? Colors.white : Colors.black),
                 ),
           SizedBox(
             height: 10,
@@ -49,16 +50,18 @@ class Movie_card_now extends StatelessWidget {
                   ),
                 )
               : Text("Unavailable",
-                  style:
-                      TextStyle(color: isDark == "true" ? Colors.white : Colors.black)),
+                  style: TextStyle(
+                      color: isDark == "true" ? Colors.white : Colors.black)),
           SizedBox(
             height: 8,
           ),
           e.voteAverage != null
               ? Text("⭐ ${e.voteAverage.toString()}/10 IMDb",
-                  style: TextStyle(color: isDark == "true" ? Colors.white : Colors.black))
+                  style: TextStyle(
+                      color: isDark == "true" ? Colors.white : Colors.black))
               : Text("Unavailable",
-                  style: TextStyle(color: isDark == "true" ? Colors.white : Colors.black))
+                  style: TextStyle(
+                      color: isDark == "true" ? Colors.white : Colors.black))
         ],
       ),
     );

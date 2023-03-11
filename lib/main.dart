@@ -1,7 +1,5 @@
 // import 'dart:math';
 
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -17,8 +15,6 @@ import 'package:mouvour_flutter/presentation/pages/HomePage/home_page.dart';
 import 'package:mouvour_flutter/presentation/pages/LikedMoviesPage/liked_movies_page.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  DartPluginRegistrant.ensureInitialized();
   runApp(MultiBlocProvider(providers: [
     BlocProvider(
       create: (context) => ThemeCubit(),
@@ -32,7 +28,6 @@ final GoRouter _router = GoRouter(
       path: '/',
       name: 'home',
       builder: (BuildContext context, GoRouterState state) =>
-          // BlocProvider(create: (context) => MovieCubit(), child: HomePage()),
           MultiBlocProvider(providers: [
         BlocProvider(
           create: (context) => MovieCubit(),
@@ -72,8 +67,7 @@ final GoRouter _router = GoRouter(
               ],
                   child: DetailsPage(
                     id: state.params['id'],
-                    isDark: state.queryParams['isDark']
-                    ,
+                    isDark: state.queryParams['isDark'],
                   )),
         ),
       ],
