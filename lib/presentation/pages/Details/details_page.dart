@@ -69,7 +69,7 @@ class _DetailsPageState extends State<DetailsPage> {
           stream: _streamController.stream,
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
-              return Center(child: Text("Some error occured"));
+              return Center(child: CircularProgressIndicator());
             } else {
               var movieData = snapshot.data![0][0];
               var castData = snapshot.data![1];
